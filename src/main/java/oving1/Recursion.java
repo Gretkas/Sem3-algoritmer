@@ -68,6 +68,8 @@ public class Recursion {
      * @param n the n
      * @return The result of the calculation
      */
+    //todo the reason for worse performance is indirect recursion (calling another method)
+    //todo this method is not what assignment is about
     public Double exp2(Double x, int n){
         if (n == 0){
             return 1.0;
@@ -88,6 +90,7 @@ public class Recursion {
      * @param n the n
      * @return The result of the calculation
      */
+    //todo this method is what assignment is about
     public double exp3(double x, int n){
         if(n == 0){
             return 1;
