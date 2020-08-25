@@ -1,5 +1,3 @@
-package oving1;
-
 import java.util.Date;
 
 /**
@@ -26,59 +24,6 @@ public class Recursion {
         return x;
     }
 
-    /**
-     * Child method for linearly calculating exponentials with even n
-     *
-     * @param exp        the exp
-     * @param n          the n
-     * @param currentEXP the The current calculated value of x to the power of n
-     * @return the result of the calculation
-     */
-    public Double expCalc2Par(Double exp, int n, Double currentEXP){
-        if(n != 1){
-            currentEXP *= exp;
-            return expCalc2Par(exp, n - 1, currentEXP);
-        }else{
-            return currentEXP;
-        }
-    }
-
-    /**
-     * Child method for linearly calculating exponentials with odd n
-     *
-     * @param exp        the exp
-     * @param n          the n
-     * @param currentEXP the The current calculated value of x to the power of n
-     * @return The result of the calculation
-     */
-    public Double expCalc2Odd(Double exp, int n, Double currentEXP){
-        if(n >= 2) {
-            currentEXP *= exp;
-            return expCalc2Odd(exp, n - 1, currentEXP);
-        }else{
-            return currentEXP;
-        }
-    }
-
-    /**
-     * This method was supposed to calculate x to the power of n in linear time, but in half the time, as the starting index is n/2.
-     * The algorithm is correct, but does not reduce calculation time, and in some cases can increase calculation time. The reason for this is unknown, as we didn't bother debugging after finding a better approach.
-     *
-     * @param x the x
-     * @param n the n
-     * @return The result of the calculation
-     */
-    public Double exp2(Double x, int n){
-        if (n == 0){
-            return 1.0;
-        }else if(n < 0){
-            throw new IllegalArgumentException("Don't even try");
-        }else if(n % 2 == 0){
-            return expCalc2Par(x*x, n/2, x*x);
-        }else{
-            return x * expCalc2Odd(x*x, (n-1)/2, x*x);
-        }
-    }
 
     /**
      * Method for calculating x to the power of n in logarithmic time. Uses exponentiation by squaring. Odd numbers does not match the formula as specified in the assignment.
@@ -88,12 +33,16 @@ public class Recursion {
      * @param n the n
      * @return The result of the calculation
      */
-    public double exp3(double x, int n){
+    public double exp2(double x, int n){
         if(n == 0){
             return 1;
         }
-        double bong = exp3(x*x, n/2);
-        if( n%2 == 0){ return bong; } else{ return x*bong; }
+        double d = exp2(x*x, n/2);
+        if( n%2 == 0){
+            return d;
+        } else{
+            return x*d;
+        }
     }
 
     /**
@@ -101,20 +50,42 @@ public class Recursion {
      *
      * @return The average computational time.
      */
-    public String timecalculator(){
+    public String timecalculator(int methodID,double x, int n){
         Date start = new Date();
         int runder = 0;
         double tid;
         Date slutt;
-        do{
-            Math.pow(1.001,1);
-            slutt = new Date();
-            ++runder;
+        switch (methodID){
+            case 1:
+                do{
+                    Math.pow(x,n);
+                    slutt = new Date();
+                    ++runder;
+                }
+                while (slutt.getTime()-start.getTime() < 1000);
+                tid = (double)(slutt.getTime()-start.getTime()) / runder;
+                return "Nanosekunder pr. runde: " + (tid * 1000000);
+            case 2:
+                do{
+                    exp(x,n);
+                    slutt = new Date();
+                    ++runder;
+                }
+                while (slutt.getTime()-start.getTime() < 1000);
+                tid = (double)(slutt.getTime()-start.getTime()) / runder;
+                return "Nanosekunder pr. runde: " + (tid * 1000000);
+            case 3:
+                do{
+                    exp2(x,n);
+                    slutt = new Date();
+                    ++runder;
+                }
+                while (slutt.getTime()-start.getTime() < 1000);
+                tid = (double)(slutt.getTime()-start.getTime()) / runder;
+                return "Nanosekunder pr. runde: " + (tid * 1000000);
         }
+        return null;
 
-        while (slutt.getTime()-start.getTime() < 1000);
-        tid = (double)(slutt.getTime()-start.getTime()) / runder;
-        return "Millisekund pr. runde:" + (tid * 1000000);
     }
 
     /**
@@ -123,9 +94,44 @@ public class Recursion {
     public static void main(String[]args){
         Recursion recursion = new Recursion();
 
+        System.out.println("\nx=2, n=10:");
         System.out.println(recursion.exp(2, 10));
         System.out.println(Math.pow(2 , 10));
-        System.out.println(recursion.exp3(2, 10));
-        System.out.println(recursion.timecalculator());
+        System.out.println(recursion.exp2(2, 10));
+        System.out.println("----------------------");
+
+        System.out.println("\nx=3, n=14:");
+        System.out.println(recursion.exp(3, 14));
+        System.out.println(Math.pow(3 , 14));
+        System.out.println(recursion.exp2(3, 14));
+        System.out.println("----------------------");
+
+        System.out.println("\nx=1,001, n=1000:");
+        System.out.println(recursion.exp(1.001, 1000));
+        System.out.println(Math.pow(1.001 , 1000));
+        System.out.println(recursion.exp2(1.001, 1000));
+
+
+        System.out.println("\nTime calculation:");
+        System.out.println("\nMath.pow:");
+        System.out.println(recursion.timecalculator(1,1.001,10));
+        System.out.println(recursion.timecalculator(1,1.001,100));
+        System.out.println(recursion.timecalculator(1,1.001,1000));
+        System.out.println("----------------------");
+
+        System.out.println("\nexp oppg2:");
+        System.out.println(recursion.timecalculator(3,1.001,10));
+        System.out.println(recursion.timecalculator(3,1.001,100));
+        System.out.println(recursion.timecalculator(3,1.001,1000));
+        System.out.println(recursion.timecalculator(3,1.001,10000));
+        System.out.println(recursion.timecalculator(3,1.001,100000));
+        System.out.println("----------------------");
+
+        System.out.println("\nexp oppg1:");
+        System.out.println(recursion.timecalculator(2,1.001,10));
+        System.out.println(recursion.timecalculator(2,1.001,100));
+        System.out.println(recursion.timecalculator(2,1.001,1000));
+
+
     }
 }
