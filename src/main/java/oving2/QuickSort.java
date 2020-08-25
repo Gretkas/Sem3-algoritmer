@@ -1,6 +1,7 @@
 package oving2;
 
 import java.util.Arrays;
+import java.util.Date;
 
 public class QuickSort {
 
@@ -130,20 +131,50 @@ public class QuickSort {
         // from a function, we do that using an array.
         return new int[] { j, g };
     }
+    /**
+     * Method for checking computation time of different algorithms in milliseconds. Shamelessly stolen from the lecture notes.
+     *
+     * @return The average computational time.
+     */
+    public String timecalculator(int[] arr, int low, int high, int methodID){
+        Date start = new Date();
+        int runder = 0;
+        double tid;
+        Date slutt;
+        switch (methodID){
+            case 1:
+                    this.dualPivotQuickSort(arr,low,high);
+                    slutt = new Date();
+                tid = (double)(slutt.getTime()-start.getTime());
+                return "Millisekunder pr. runde: " + (tid);
+            case 2:
+                    this.sort(arr);
+                    slutt = new Date();
+                tid = (double)(slutt.getTime()-start.getTime()) ;
+                return "Millisekunder pr. runde: " + (tid);
+        }
+        return null;
+
+    }
 
     public static void main(String[] args) {
+        QuickSort quickSort = new QuickSort();
+        int[] arr = new int[10000000];
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = (int) (Math.random()*100);
+        }
 
-        int[] arr = { 24, 8, 42, 75, 29, 77, 38, 57 };
-        dualPivotQuickSort(arr, 0, arr.length - 1);
-        System.out.println(Arrays.toString(arr));
-
-        int[] tabell = new int[10];
+        int[] tabell = new int[10000000];
         QuickSort sorter = new QuickSort();
         for(int i = 0; i < tabell.length; i++){
-          tabell[i] = (int) (Math.random()*100);
+            tabell[i] = (int) (Math.random()*100);
         }
-        sorter.sort(tabell);
-        System.out.println(Arrays.toString(tabell));
 
+        System.out.println(quickSort.timecalculator(arr,  0, arr.length -1, 1));
+
+        swap(arr, 0, (arr.length-1)/3);
+        swap(arr, (arr.length-1), (arr.length-1) - ((arr.length -1)/3));
+
+        System.out.println(quickSort.timecalculator(arr,  0, arr.length -1, 1));
     }
 }
