@@ -107,14 +107,14 @@ public class Recursion {
         double tid;
         Date slutt;
         do{
-            Math.pow(1.00001,10000);
+            Math.pow(1.001,1);
             slutt = new Date();
             ++runder;
         }
 
         while (slutt.getTime()-start.getTime() < 1000);
         tid = (double)(slutt.getTime()-start.getTime()) / runder;
-        return "Millisekund pr. runde:" + (tid * 10000);
+        return "Millisekund pr. runde:" + (tid * 1000000);
     }
 
     /**
