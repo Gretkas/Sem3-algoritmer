@@ -1,3 +1,5 @@
+package oving1;
+
 import java.util.Date;
 
 /**
@@ -51,13 +53,15 @@ public class Recursion {
      * @return The average computational time.
      */
     public String timecalculator(int methodID,double x, int n){
-        Date start = new Date();
+        Date start;
         int runder = 0;
         double tid;
         Date slutt;
         switch (methodID){
             case 1:
+                start = new Date();
                 do{
+
                     Math.pow(x,n);
                     slutt = new Date();
                     ++runder;
@@ -66,6 +70,7 @@ public class Recursion {
                 tid = (double)(slutt.getTime()-start.getTime()) / runder;
                 return "Nanosekunder pr. runde: " + (tid * 1000000);
             case 2:
+                start = new Date();
                 do{
                     exp(x,n);
                     slutt = new Date();
@@ -75,6 +80,7 @@ public class Recursion {
                 tid = (double)(slutt.getTime()-start.getTime()) / runder;
                 return "Nanosekunder pr. runde: " + (tid * 1000000);
             case 3:
+                start = new Date();
                 do{
                     exp2(x,n);
                     slutt = new Date();
