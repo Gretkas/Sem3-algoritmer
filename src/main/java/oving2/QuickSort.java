@@ -1,3 +1,4 @@
+
 package oving2;
 
 import java.util.Arrays;
@@ -200,3 +201,45 @@ public class QuickSort {
         System.out.println(quickSort.sjekksSortering(arr));
     }
 }
+
+    }
+        return middle;
+        }
+            if (t[left] > t[middle]) swap(t, left, middle);
+            swap(t, middle, right);
+        if (t[middle] > t[right]) {
+        if (t[left] > t[middle]) swap(t, left, middle);
+        int middle = (right + left) / 2;
+    private static int median3sort(int []t, int left, int right) {
+
+    }
+        return indexLeft;
+        swap(t, indexLeft, right - 1);
+        }
+            swap(t, indexLeft, indexRight);
+            if (indexLeft >= indexRight) break;
+            while (t[--indexRight] > pivot);
+            while (t[++indexLeft] < pivot);
+        for (indexLeft = left, indexRight = right - 1;;) {
+        swap(t, middle, right - 1);
+        int pivot = t[middle];
+        int middle = median3sort(t, left, right);
+        int indexLeft, indexRight;
+    private static int split(int []t, int left, int right) {
+
+    }
+        }
+            median3sort(t, left, right);
+        } else {
+            quicksortBook(t, partitionIndex + 1, right);
+            quicksortBook(t, left, partitionIndex - 1);
+            int partitionIndex = split(t, left, right);
+        if (right - left > 2) {
+    private static void quicksortBook(int []t, int left, int right) {
+
+    }
+        quicksortBook(t, 0, t.length - 1);
+    public static void sortBook(int []t) {
+     */
+     * Quicksort from a book (one pivot)
+    /**
