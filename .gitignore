@@ -11,3 +11,5 @@ target/classes/oving1/Palindrom.class
 target/classes/oving1/Recursion.class
 
 target/classes/oving2/QuickSort.class
+
+*.class
