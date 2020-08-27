@@ -1,3 +1,5 @@
+
+
 package oving2;
 
 import java.util.Arrays;
@@ -131,6 +133,49 @@ public class QuickSort {
         // from a function, we do that using an array.
         return new int[] { j, g };
     }
+
+    /**
+     * Quicksort from a book (one pivot)
+     */
+    public static void sortBook(int []t) {
+        quicksortBook(t, 0, t.length - 1);
+    }
+
+    private static void quicksortBook(int []t, int left, int right) {
+        if (right - left > 2) {
+            int partitionIndex = split(t, left, right);
+            quicksortBook(t, left, partitionIndex - 1);
+            quicksortBook(t, partitionIndex + 1, right);
+        } else {
+            median3sort(t, left, right);
+        }
+    }
+
+    private static int split(int []t, int left, int right) {
+        int indexLeft, indexRight;
+        int middle = median3sort(t, left, right);
+        int pivot = t[middle];
+        swap(t, middle, right - 1);
+        for (indexLeft = left, indexRight = right - 1;;) {
+            while (t[++indexLeft] < pivot);
+            while (t[--indexRight] > pivot);
+            if (indexLeft >= indexRight) break;
+            swap(t, indexLeft, indexRight);
+        }
+        swap(t, indexLeft, right - 1);
+        return indexLeft;
+    }
+
+    private static int median3sort(int []t, int left, int right) {
+        int middle = (right + left) / 2;
+        if (t[left] > t[middle]) swap(t, left, middle);
+        if (t[middle] > t[right]) {
+            swap(t, middle, right);
+            if (t[left] > t[middle]) swap(t, left, middle);
+        }
+        return middle;
+    }
+
     /**
      * Method for checking computation time of different algorithms in milliseconds. Shamelessly stolen from the lecture notes.
      *
@@ -138,30 +183,48 @@ public class QuickSort {
      */
     public String timecalculator(int[] arr, int low, int high, int methodID){
         Date start = new Date();
-        int runder = 0;
         double tid;
         Date slutt;
         switch (methodID){
             case 1:
-                    this.dualPivotQuickSort(arr,low,high);
+                start = new Date();
+                    dualPivotQuickSort(arr,low,high);
                     slutt = new Date();
                 tid = (double)(slutt.getTime()-start.getTime());
-                return "Millisekunder pr. runde: " + (tid);
+                return "Millisekunder per sortering: " + (tid);
             case 2:
+                start = new Date();
                     this.sort(arr);
                     slutt = new Date();
                 tid = (double)(slutt.getTime()-start.getTime()) ;
-                return "Millisekunder pr. runde: " + (tid);
+                return "Millisekunder per sortering: " + (tid);
         }
         return null;
-
     }
+
+    public int summerTabell(int[] tabell){
+        int sum = 0;
+        for (int i = 0; i < tabell.length; i++) {
+            sum += tabell[i];
+        }
+        return sum;
+    }
+    public boolean sjekksSortering(int[] tabell){
+
+        for (int i = 0; i < tabell.length - 1; i++) {
+            if (tabell[i] > tabell[i+1] ){
+                return false;
+            }
+        }
+        return true;
+    }
+
 
     public static void main(String[] args) {
         QuickSort quickSort = new QuickSort();
-        int[] arr = new int[10000000];
+        int[] arr = new int[10000];
         for(int i = 0; i < arr.length; i++){
-            arr[i] = (int) (Math.random()*100);
+            arr[i] = i;
         }
 
         int[] tabell = new int[10000000];
@@ -170,11 +233,16 @@ public class QuickSort {
             tabell[i] = (int) (Math.random()*100);
         }
 
-        System.out.println(quickSort.timecalculator(arr,  0, arr.length -1, 1));
-
-        swap(arr, 0, (arr.length-1)/3);
-        swap(arr, (arr.length-1), (arr.length-1) - ((arr.length -1)/3));
-
-        System.out.println(quickSort.timecalculator(arr,  0, arr.length -1, 1));
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.timecalculator(arr,  0, arr.length -1, 2));
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.sjekksSortering(arr));
+        //swap(arr, 0, ((arr.length - 1) / 3));
+        //swap(arr, (arr.length-1), arr.length - 1 - (arr.length - 1)/3);
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.timecalculator(arr,  (arr.length - 1) / 3, arr.length - 1 - (arr.length - 1)/3, 2));
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.sjekksSortering(arr));
     }
 }
+
