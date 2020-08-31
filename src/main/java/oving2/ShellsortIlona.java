@@ -9,9 +9,6 @@ public class ShellsortIlona {
        Random, Sortert, Baklengst_sortert
     }
 
-    // We use seed 17 in order to have same "random" sequence every time
-    private static final Random randomGen = new Random(17);
-
     public static void shellSortGonnet(int []t, double deletall) {
         int s = t.length/2;
         while (s > 0) {
@@ -64,6 +61,7 @@ public class ShellsortIlona {
     }
 
     public static int[] getTabellRandom(int length, int upperBound) {
+        Random randomGen = new Random(17);
         int[] tabell = new int[length];
         for (int i = 0; i < length; i++) {
             tabell[i] = randomGen.nextInt(upperBound);
@@ -132,33 +130,65 @@ public class ShellsortIlona {
         System.out.println("==============================================\n");
     }
 
-    public static void gjoerOppgave2() {
-
+    public static void gjoerOppgave2(int[] tabell, double deletall,
+                                     TabellType type) {
+        System.out.println("Gonnets sekvens med deletallet " + deletall);
+        System.out.println("\t" + type + " tabell av størrelsen :" + tabell.length);
+        int sumFoer = sjekkSum(tabell);
+        long startTid = System.nanoTime();
+        shellSortGonnet(tabell, deletall);
+        long sluttTid = System.nanoTime();
+        System.out.println("\t\t" + timecalculator());
+        long varighet = (sluttTid - startTid)/1000000;
+        System.out.println("\t\tTotal tid: " + varighet + " millisekunder");
+        System.out.println("\t\tSjekk sum: " + (sumFoer == sjekkSum(tabell)));
+        System.out.println("\t\tSjekk rekkefoelge: " + sjekkRekkefoelge(tabell));
+        System.out.println("==============================================\n");
     }
 
     public static void main(String[] args) {
         int lengde = 1000000;
-        int upperBound = 100;
+        int upperBound = 10;
         TabellType type = TabellType.Random;
 
-        gjoerGonnet(getTabellRandom(lengde, upperBound),
-                1.7, type);
+//        gjoerGonnet(getTabellRandom(lengde, upperBound),
+//                1.7, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound),
+//                2.2, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound),
+//                3, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound),
+//                4, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound),
+//                100, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound),
+//                1000, type);
+//
+//        gjoerKnuth(getTabellRandom(lengde, upperBound), type);
 
-        gjoerGonnet(getTabellRandom(lengde, upperBound),
-                2.2, type);
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 2.2, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 2.3, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 2.4, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 2.6, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 2.7, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 2.8, type);
+//
+//        gjoerGonnet(getTabellRandom(lengde, upperBound), 3.0, type);
 
-        gjoerGonnet(getTabellRandom(lengde, upperBound),
-                3, type);
+        gjoerOppgave2(getTabellRandom(100000000, upperBound),
+                2.8, type);
 
-        gjoerGonnet(getTabellRandom(lengde, upperBound),
-                4, type);
-
-        gjoerGonnet(getTabellRandom(lengde, upperBound),
-                100, type);
-
-        gjoerGonnet(getTabellRandom(lengde, upperBound),
-                1000, type);
-
-        gjoerKnuth(getTabellRandom(lengde, upperBound), type);
+        gjoerOppgave2(getTabellRandom(300000000, upperBound),
+                2.8, type);
     }
 }
