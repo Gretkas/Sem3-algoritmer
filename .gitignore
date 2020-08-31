@@ -1,15 +1,3 @@
 /.idea
 javadoc
 /.idea/
-
-Sem3-algoritmer.iml
-
-target/classes/oving1/Kalkis.class
-
-target/classes/oving1/Palindrom.class
-
-target/classes/oving1/Recursion.class
-
-target/classes/oving2/QuickSort.class
-
-*.class
