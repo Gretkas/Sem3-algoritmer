@@ -13,3 +13,4 @@ target/classes/oving1/Recursion.class
 target/classes/oving2/QuickSort.class
 
 *.class
+pom.xml
