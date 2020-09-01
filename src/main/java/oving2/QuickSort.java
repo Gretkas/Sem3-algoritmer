@@ -3,7 +3,6 @@
 package oving2;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 
 public class QuickSort {
@@ -65,24 +64,6 @@ public class QuickSort {
         int temp = arr[i];
         arr[i] = arr[j];
         arr[j] = temp;
-    }
-
-
-    static void dualPivotHelper(int[] arr, int low, int high){
-        /*
-         * Index run[i] is the start of i-th run
-         * (ascending or descending sequence).
-         */
-        // Check if the array is nearly sorted
-        int k = low;
-            if (arr[k] <= arr[k + 1]) { // ascending
-                while (++k < high && arr[k - 1] <= arr[k]);
-                if(k < high){
-                    dualPivotQuickSort(arr, low, high);
-                }
-            }else{
-                dualPivotQuickSort(arr, low, high);
-            }
     }
 
     static void dualPivotQuickSort(int[] arr, int low, int high)
@@ -207,20 +188,14 @@ public class QuickSort {
         switch (methodID){
             case 1:
                 start = new Date();
-                    Arrays.sort(arr);
+                    dualPivotQuickSort(arr,low,high);
                     slutt = new Date();
                 tid = (double)(slutt.getTime()-start.getTime());
                 return "Millisekunder per sortering: " + (tid);
             case 2:
                 start = new Date();
-                    dualPivotHelper(arr, low, high);
+                    this.sort(arr);
                     slutt = new Date();
-                tid = (double)(slutt.getTime()-start.getTime()) ;
-                return "Millisekunder per sortering: " + (tid);
-            case 3:
-                start = new Date();
-                sort(arr);
-                slutt = new Date();
                 tid = (double)(slutt.getTime()-start.getTime()) ;
                 return "Millisekunder per sortering: " + (tid);
         }
@@ -234,7 +209,6 @@ public class QuickSort {
         }
         return sum;
     }
-
     public boolean sjekksSortering(int[] tabell){
 
         for (int i = 0; i < tabell.length - 1; i++) {
@@ -245,103 +219,30 @@ public class QuickSort {
         return true;
     }
 
-    public int[] copyArr(int[] arr){
-        int[] testArr = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            testArr[i] = arr[i];
-        }
-        return testArr;
-    }
-
-    public int[] createArrayOneTwo(int[] array){
-        int[] arr = new int[array.length];
-
-        for(int i = 0; i < arr.length; i++){
-            if(i%2 == 0){
-                arr[i] = 1;
-            }else{
-                arr[i] = 2;
-            }
-        }
-        return arr;
-    }
-
-    public int[] createArrayRandom(int[] array){
-        int[] arr = new int[array.length];
-        for(int i = 0; i < arr.length; i++){
-            arr[i] = (int) (Math.random()*100);
-        }
-        return arr;
-    }
 
     public static void main(String[] args) {
         QuickSort quickSort = new QuickSort();
-        int[] arr = new int[1000000];
-        arr = quickSort.createArrayRandom(arr);
+        int[] arr = new int[10000];
+        for(int i = 0; i < arr.length; i++){
+            arr[i] = i;
+        }
 
-        System.out.println("Tabellen summert = " + quickSort.summerTabell(arr));
-        System.out.println("Tabellen summert oneTwo = " + quickSort.summerTabell(quickSort.createArrayOneTwo(arr)));
-        System.out.println( "Tabellen er sortert: " +quickSort.sjekksSortering(arr));
+        int[] tabell = new int[10000000];
+        QuickSort sorter = new QuickSort();
+        for(int i = 0; i < tabell.length; i++){
+            tabell[i] = (int) (Math.random()*100);
+        }
 
-        System.out.println();
-        System.out.println("Java Dual PivotQuickSort: ");
-        int[] testArr = quickSort.copyArr(arr);
-        System.out.println(quickSort.timecalculator(testArr,  0, arr.length -1, 1));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr));
-
-        System.out.println();
-        System.out.println("Java Dual PivotQuickSort sorted: ");
-        System.out.println(quickSort.timecalculator(testArr,  0, arr.length - 1, 1));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr));
-
-        System.out.println();
-        System.out.println("Java Dual PivotQuickSort OneTwo: ");
-        testArr = quickSort.createArrayOneTwo(arr);
-        System.out.println(quickSort.timecalculator(testArr,  0, arr.length - 1, 1));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr));
-
-        System.out.println();
-        System.out.println("Dual PivotQuickSort: ");
-        int[] testArr1 = quickSort.copyArr(arr);
-        System.out.println(quickSort.timecalculator(testArr1,  0, arr.length -1, 2));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr1));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr1));
-
-        System.out.println();
-        System.out.println("Dual PivotQuickSort sorted: ");
-        System.out.println(quickSort.timecalculator(testArr1,  0, arr.length - 1, 2));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr1));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr1));
-
-        System.out.println();
-        System.out.println("Dual PivotQuickSort OneTwo: ");
-        testArr1 = quickSort.createArrayOneTwo(arr);
-        System.out.println(quickSort.timecalculator(testArr1,  0, arr.length - 1, 2));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr1));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr1));
-
-        System.out.println();
-        System.out.println("QuickSort: ");
-        int[] testArr2 = quickSort.copyArr(arr);
-        System.out.println(quickSort.timecalculator(testArr2,  0, arr.length -1, 3));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr2));
-        System.out.println("Sumsjekk etter sortering: " +quickSort.summerTabell(testArr2));
-
-        System.out.println();
-        System.out.println("QuickSort sorted: ");
-        System.out.println(quickSort.timecalculator(testArr2,  0, arr.length - 1, 3));
-        System.out.println("Sumsjekk etter sortering: " + quickSort.summerTabell(testArr2));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr2));
-
-        System.out.println();
-        System.out.println("QuickSort OneTwo: ");
-        testArr2 = quickSort.createArrayOneTwo(arr);
-        System.out.println(quickSort.timecalculator(testArr2,  0, arr.length -1, 3));
-        System.out.println("Tabellen er sortert: " + quickSort.sjekksSortering(testArr2));
-        System.out.println( "Sumsjekk etter sortering: " +quickSort.summerTabell(testArr2));
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.timecalculator(arr,  0, arr.length -1, 2));
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.sjekksSortering(arr));
+        //swap(arr, 0, ((arr.length - 1) / 3));
+        //swap(arr, (arr.length-1), arr.length - 1 - (arr.length - 1)/3);
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.timecalculator(arr,  (arr.length - 1) / 3, arr.length - 1 - (arr.length - 1)/3, 2));
+        System.out.println(quickSort.summerTabell(arr));
+        System.out.println(quickSort.sjekksSortering(arr));
     }
 }
 
