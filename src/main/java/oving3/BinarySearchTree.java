@@ -5,9 +5,20 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
+/**
+ * The type Binary search tree.
+ */
 public class BinarySearchTree {
+    /**
+     * The Root.
+     */
     Node root;
 
+    /**
+     * Instantiates a new Binary search tree.
+     *
+     * @param value the value
+     */
     public BinarySearchTree(String value) {
         if (!value.contains(",")  && !value.contains(" ")) {
         this.root = new Node(value);
@@ -28,6 +39,11 @@ public class BinarySearchTree {
 
     }
 
+    /**
+     * Add.
+     *
+     * @param value the value
+     */
     public void add(String value) {
         addHelper(root, value);
     }
@@ -80,6 +96,9 @@ public class BinarySearchTree {
         return words;
     }
 
+    /**
+     * Print tree.
+     */
     public void printTree() {
         LinkedList<String> words = getWords();
         int counter = 1;
@@ -114,6 +133,11 @@ public class BinarySearchTree {
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         BinarySearchTree binarySearchTree = new BinarySearchTree(scanner.nextLine());
