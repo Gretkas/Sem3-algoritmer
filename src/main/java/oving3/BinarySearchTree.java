@@ -69,7 +69,14 @@ public class BinarySearchTree {
         queue.add(root);
         LinkedList<String> words = new LinkedList<String>();
         words.add(root.getValue());
-        while (!queue.isEmpty() && queue.size()<1024) {
+
+        int maxElements = 0;
+        for (int i = 0; i < getDepth(0,root); i++) {
+            maxElements += Math.pow(2,i);
+        }
+
+
+        while (!queue.isEmpty() && queue.size()<maxElements) {
             Node currentNote = queue.remove();
             if (!currentNote.getValue().equals("_")) {
                 if (currentNote.getLeft() != null) {
@@ -94,6 +101,30 @@ public class BinarySearchTree {
             }
         }
         return words;
+    }
+
+
+    private int getDepth(int current, Node currentNode){
+        if(this.root == null){
+            return 0;
+        }
+        current++;
+        int currentRight = 0;
+        int currentLeft = 0;
+
+
+
+        if(currentNode.getRight() != null) {
+            currentRight = getDepth(current, currentNode.getRight());
+        }
+        if(currentNode.getLeft() != null){
+            currentLeft = getDepth(current, currentNode.getLeft());
+        }
+        if(currentNode.getRight() == null && currentNode.getLeft() == null){
+            return current;
+        }
+
+        return Math.max(currentRight, currentLeft);
     }
 
     /**
@@ -139,11 +170,16 @@ public class BinarySearchTree {
      * @param args the input arguments
      */
     public static void main(String[] args) {
+        System.out.println("Write in words seperated with either a comma or a space. Or one word if you would like to add the rest one at a time.");
+        System.out.println("PS. words starting with norwegian letters might give an unexpected result.");
         Scanner scanner = new Scanner(System.in);
         BinarySearchTree binarySearchTree = new BinarySearchTree(scanner.nextLine());
+        System.out.println("Result:");
         binarySearchTree.printTree();
         while (true) {
+            System.out.println("Write one word:");
             binarySearchTree.add(scanner.nextLine());
+            System.out.println("Result:");
             binarySearchTree.printTree();
         }
     }

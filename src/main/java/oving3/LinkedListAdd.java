@@ -2,6 +2,7 @@ package oving3;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 /**
  * The type Linked list add.
@@ -16,15 +17,15 @@ public class LinkedListAdd {
      * @param num2 the num 2
      * @return the array list
      */
-    public ArrayList<LinkedList<Integer>> andHelper(Long num1, Long num2) {
+    public ArrayList<LinkedList<Integer>> andHelper(String num1, String num2) {
         ArrayList<LinkedList<Integer>> result = new ArrayList<>();
         LinkedList<Integer> list1 = new LinkedList<>();
         LinkedList<Integer> list2 = new LinkedList<>();
-        for (int i = 0; i < num1.toString().length(); i++) {
-            list1.add(num1.toString().charAt(i)-48);
+        for (int i = 0; i < num1.length(); i++) {
+            list1.add(num1.charAt(i)-48);
         }
-        for (int i = 0; i < num2.toString().length(); i++) {
-            list2.add(num2.toString().charAt(i)-48);
+        for (int i = 0; i < num2.length(); i++) {
+            list2.add(num2.charAt(i)-48);
         }
         int difference = list1.size()-list2.size();
         if (difference > 0) {
@@ -50,7 +51,7 @@ public class LinkedListAdd {
      * @param two the two
      * @return the long
      */
-    public Long add(Long one, Long two) {
+    public String add(String one, String two) {
         ArrayList<LinkedList<Integer>>lists = andHelper(one, two);
         LinkedList<Integer> num1 = lists.get(0);
         LinkedList<Integer> num2 = lists.get(1);
@@ -73,7 +74,7 @@ public class LinkedListAdd {
         for (Integer integer : result) {
             temp.append(integer);
         }
-        return Long.parseLong(temp.toString());
+        return temp.toString();
     }
 
     /**
@@ -83,7 +84,7 @@ public class LinkedListAdd {
      * @param two the two
      * @return the long
      */
-    public Long subtract(Long one, Long two) {
+    public String subtract(String one, String two) {
 
         ArrayList<LinkedList<Integer>>lists = andHelper(one, two);
         LinkedList<Integer> num1 = lists.get(0);
@@ -106,16 +107,23 @@ public class LinkedListAdd {
         for (Integer integer : result) {
             temp.append(integer);
         }
+
+        String strRes = temp.toString();
+        while(strRes.charAt(0) == '0'){
+            strRes = strRes.substring(1);
+        }
+
+
         if (isNegative) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(1);
             for (int i = 0; i < temp.toString().length(); i++) {
                 stringBuilder.append(0);
             }
-            return Long.parseLong(temp.toString()) - Long.parseLong(stringBuilder.toString());
+            return "-"+subtract(stringBuilder.toString(),temp.toString());
 
         }
-        return Long.parseLong(temp.toString());
+        return strRes;
     }
 
     /**
@@ -123,10 +131,35 @@ public class LinkedListAdd {
      *
      * @param args the input arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         LinkedListAdd linkedListAdd = new LinkedListAdd();
-        System.out.println(linkedListAdd.add(99999999999L, 9L));
-        System.out.println(linkedListAdd.subtract(99199999999999L, 999L));
+        System.out.println("----------------------------------------");
+        System.out.println("Welcome to HUMONGOUS number operation!!!");
+        System.out.println("----------------------------------------");
+
+        Scanner sc = new Scanner(System.in);
+
+        while(true) {
+            System.out.println("pick your desired operation:\nadd:        1 \nsubtract:   2\nexit:       3");
+
+            switch (sc.nextLine()){
+                case "1":
+                    System.out.println("Write your numbers separated by a lineshift");
+                    System.out.println(linkedListAdd.add(sc.nextLine(),sc.nextLine()));
+                    break;
+                case "2":
+                    System.out.println("Write your numbers separated by a lineshift");
+                    System.out.println(linkedListAdd.subtract(sc.nextLine(),sc.nextLine()));
+                    break;
+                default:
+                    System.exit(0);
+            }
+
+
+        }
+
+
+
 
     }
 }
