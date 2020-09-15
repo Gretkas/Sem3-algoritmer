@@ -42,5 +42,17 @@ public class Node<T> {
         this.hash = hash;
     }
 
+    public Node<T> copyOf(){
+        return new Node<>(this.value,this.key,this.hash);
+    }
 
+    @Override
+    public String toString() {
+        return "Node{" +
+                "value=" + value +
+                ", nodeNext=" + nodeNext +
+                ", key=" + key +
+                ", hash=" + hash +
+                '}';
+    }
 }

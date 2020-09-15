@@ -7,7 +7,7 @@ public class HashTable<T> {
     private int size;
     private float loadFactor;
     private int threshold;
-    private int numberOfBuckets;
+    private int numberOfElements;
 
 
     public HashTable() {
@@ -15,10 +15,11 @@ public class HashTable<T> {
     }
 
     public HashTable(int size) {
-        this.numberOfBuckets = 0;
+        this.numberOfElements = 0;
         this.size = size;
         this.loadFactor = 0.75f;
-        this.threshold = (int) loadFactor*size;
+        float temp = size*loadFactor;
+        this.threshold = (int) temp;
         this.nodes = new Node[size];
     }
 
@@ -29,50 +30,84 @@ public class HashTable<T> {
         this.add(node);
     }
 
-    private void add(Node node){
+    private void add(Node<T> node){
         int hash = node.getHash();
-        if(nodes[hash] != null){
+        numberOfElements++;
+        if(nodes[hash] == null){
             nodes[hash] = node;
-            numberOfBuckets++;
+
         }
         else{
+            System.out.println("Collision at: " + hash);
             Node<T> currentNode = nodes[hash];
-            while(currentNode.getNodeNext() != null){
+            while(!(currentNode.getNodeNext() == null)){
                 currentNode = currentNode.getNodeNext();
             }
             currentNode.setNodeNext(node);
         }
-        if(numberOfBuckets >= threshold) doubleSize();
+        if(numberOfElements >= threshold) doubleSize();
     }
 
 
     private void doubleSize(){
         this.size <<= 1;
         this.threshold <<= 1;
+        this.numberOfElements = 0;
 
         Node[] newNodes = new Node[size];
         Node[] oldNodes = Arrays.copyOf(nodes,nodes.length);
         nodes = newNodes;
         for (int i = 0; i < oldNodes.length; i++) {
             if(oldNodes[i] != null) {
-                this.add(oldNodes[i]);
+
+                this.add((T) oldNodes[i].getValue(),oldNodes[i].getKey());
+
                 if(oldNodes[i].getNodeNext() != null){
                     Node currentNode = oldNodes[i];
 
                     while(currentNode.getNodeNext() != null){
-
                         currentNode = currentNode.getNodeNext();
-                        this.add(currentNode);
+                        this.add((T) currentNode.getValue(), currentNode.getKey());
                     }
                 }
             }
         }
     }
 
-//TODO: resten
+
+    public boolean search(int key, T value){
+
+        int hash = hash(key);
+        if(nodes[hash] != null){
+            Node currentNode = nodes[hash];
+            while (currentNode.getNodeNext() != null){
+                if(value.equals(currentNode.getValue())) return true;
+                currentNode = currentNode.getNodeNext();
+            }
+            return value.equals(currentNode.getValue());
+        }
+        return false;
+    }
+
+
 
 
     private int hash(int key){
-        return key % size;
+        int result = key % size;
+        if(result < 0)  return result + size;
+        return result;
+    }
+
+
+    public int getSize() {
+        return size;
+    }
+
+    public int getNumberOfElements() {
+        return numberOfElements;
+    }
+
+    public Node[] getNodes() {
+        return nodes;
     }
 }
