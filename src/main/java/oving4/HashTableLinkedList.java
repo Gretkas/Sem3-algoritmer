@@ -2,7 +2,7 @@ package oving4;
 
 import java.util.Arrays;
 
-public class HashTable<T> {
+public class HashTableLinkedList<T> {
     private Node[] nodes;
     private int size;
     private float loadFactor;
@@ -10,11 +10,11 @@ public class HashTable<T> {
     private int numberOfElements;
 
 
-    public HashTable() {
+    public HashTableLinkedList() {
         this(1<<4);
     }
 
-    public HashTable(int size) {
+    public HashTableLinkedList(int size) {
         this.numberOfElements = 0;
         this.size = size;
         this.loadFactor = 0.75f;
@@ -54,9 +54,8 @@ public class HashTable<T> {
         this.threshold <<= 1;
         this.numberOfElements = 0;
 
-        Node[] newNodes = new Node[size];
         Node[] oldNodes = Arrays.copyOf(nodes,nodes.length);
-        nodes = newNodes;
+        nodes = new Node[size];
         for (int i = 0; i < oldNodes.length; i++) {
             if(oldNodes[i] != null) {
 

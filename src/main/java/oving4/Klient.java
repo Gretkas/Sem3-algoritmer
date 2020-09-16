@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 
 public class Klient {
-    public static HashTable<String> hash = new HashTable<String>(4);
+    public static HashTableLinkedList<String> hash = new HashTableLinkedList<String>(4);
 
     public static void main(String[] args) throws Exception {
         readFIle();
