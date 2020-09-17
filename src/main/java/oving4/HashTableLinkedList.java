@@ -2,8 +2,14 @@ package oving4;
 
 import java.util.Arrays;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class HashTableLinkedList<T> {
-    private Node[] nodes;
+    private NodeLinkedList[] nodes;
     private int size;
     private float loadFactor;
     private int threshold;
@@ -20,17 +26,17 @@ public class HashTableLinkedList<T> {
         this.loadFactor = 0.75f;
         float temp = size*loadFactor;
         this.threshold = (int) temp;
-        this.nodes = new Node[size];
+        this.nodes = new NodeLinkedList[size];
     }
 
 
     public void add(T value, int key){
         int hash = this.hash(key);
-        Node<T> node = new Node<>(value,key,hash);
+        NodeLinkedList<T> node = new NodeLinkedList<>(value,key,hash);
         this.add(node);
     }
 
-    private void add(Node<T> node){
+    private void add(NodeLinkedList<T> node){
         int hash = node.getHash();
         numberOfElements++;
         if(nodes[hash] == null){
@@ -39,7 +45,7 @@ public class HashTableLinkedList<T> {
         }
         else{
             System.out.println("Collision at: " + hash);
-            Node<T> currentNode = nodes[hash];
+            NodeLinkedList<T> currentNode = nodes[hash];
             while(!(currentNode.getNodeNext() == null)){
                 currentNode = currentNode.getNodeNext();
             }
@@ -54,15 +60,15 @@ public class HashTableLinkedList<T> {
         this.threshold <<= 1;
         this.numberOfElements = 0;
 
-        Node[] oldNodes = Arrays.copyOf(nodes,nodes.length);
-        nodes = new Node[size];
+        NodeLinkedList[] oldNodes = Arrays.copyOf(nodes,nodes.length);
+        nodes = new NodeLinkedList[size];
         for (int i = 0; i < oldNodes.length; i++) {
             if(oldNodes[i] != null) {
 
                 this.add((T) oldNodes[i].getValue(),oldNodes[i].getKey());
 
                 if(oldNodes[i].getNodeNext() != null){
-                    Node currentNode = oldNodes[i];
+                    NodeLinkedList currentNode = oldNodes[i];
 
                     while(currentNode.getNodeNext() != null){
                         currentNode = currentNode.getNodeNext();
@@ -75,10 +81,9 @@ public class HashTableLinkedList<T> {
 
 
     public boolean search(int key, T value){
-
         int hash = hash(key);
         if(nodes[hash] != null){
-            Node currentNode = nodes[hash];
+            NodeLinkedList currentNode = nodes[hash];
             while (currentNode.getNodeNext() != null){
                 if(value.equals(currentNode.getValue())) return true;
                 currentNode = currentNode.getNodeNext();
@@ -106,7 +111,7 @@ public class HashTableLinkedList<T> {
         return numberOfElements;
     }
 
-    public Node[] getNodes() {
+    public NodeLinkedList[] getNodes() {
         return nodes;
     }
 }

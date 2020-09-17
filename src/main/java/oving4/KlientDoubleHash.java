@@ -7,12 +7,9 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class KlientDoubleHash {
-    private static HashTableDoubleHash hashTableDH = new HashTableDoubleHash(2,0.75f);  //size: 12001349 ld: 1f
-    /*  size: 32768
-        16 -> 1861.0
-    * */
+    private static HashTableDoubleHash hashTableDH;  //size: 12001349 ld: 1f
     private static int[] array = new int[(int)1e7];
-    private static int[] numCollArray = new int[(int)1e7];
+    private static int[] numCollArray = new int[100];
 
     public static void main(String[] args) {
         Random random = new Random();
@@ -32,8 +29,8 @@ public class KlientDoubleHash {
         }
         System.out.println("Our methods loadfactor: " + ((double)hashTableDH.getNumberOfElements()/hashTableDH.getSize()));
 
-        hashTableDH.add(123456789);
-        System.out.println(hashTableDH.search(123456789));
+        /*hashTableDH.add(123456789);
+        System.out.println(hashTableDH.search(123456789));*/
 
         System.out.println("------------------------------------------");
         System.out.println("Time for Javas HashSet: "+ timeJavaHashSet());
@@ -47,6 +44,8 @@ public class KlientDoubleHash {
         double tid;
         Date slutt;
         do{
+            //If you want to try automatic size expansion change size to a power of two, and loadfactor to 0.5f.
+            //Note this might not work for big data sets, due to not enough heap space
             hashTableDH = new HashTableDoubleHash(12001349,1f);
             for (int i = 0; i < 1e7; i++) {
                 hashTableDH.add(array[i]);
@@ -55,11 +54,10 @@ public class KlientDoubleHash {
             slutt = new Date();
             ++runder;
         }
-        while (slutt.getTime()-start.getTime() < 1000);
+        while (slutt.getTime()-start.getTime() < 10000);
         tid = (double)(slutt.getTime()-start.getTime()) / runder;
         return tid;
     }
-
 
     private static double timeJavaHashMap(){
         Date start = new Date();
@@ -68,17 +66,18 @@ public class KlientDoubleHash {
         Date slutt;
         HashMap<Integer,Integer> hm = null;
         do{
-            hm = new HashMap<>(1<<24);
+            hm = new HashMap<>(12001349,1.0f);
             for (int i = 0; i < 1e7; i++) {
                 hm.put(array[i], array[i]);
             }
             slutt = new Date();
             ++runder;
         }
-        while (slutt.getTime()-start.getTime() < 1000);
+        while (slutt.getTime()-start.getTime() < 10000);
         tid = (double)(slutt.getTime()-start.getTime()) / runder;
         return tid;
     }
+
 
     private static double timeJavaHashSet(){
         Date start = new Date();
@@ -87,34 +86,14 @@ public class KlientDoubleHash {
         Date slutt;
         HashSet<Integer> hm = null;
         do{
-            hm = new HashSet<>(1<<24);
+            hm = new HashSet<>(12001349,1.0f);
             for (int i = 0; i < 1e7; i++) {
                 hm.add(array[i]);
             }
             slutt = new Date();
             ++runder;
         }
-        while (slutt.getTime()-start.getTime() < 1000);
-        tid = (double)(slutt.getTime()-start.getTime()) / runder;
-        return tid;
-    }
-
-
-    private static double timeJavaHashMapConcurrent(){
-        Date start = new Date();
-        int runder = 0;
-        double tid;
-        Date slutt;
-        ConcurrentHashMap<Integer,Integer> hm = null;
-        do{
-            hm = new ConcurrentHashMap<>();
-            for (int i = 0; i < 1e7; i++) {
-                hm.put(array[i],array[i]);
-            }
-            slutt = new Date();
-            ++runder;
-        }
-        while (slutt.getTime()-start.getTime() < 1000);
+        while (slutt.getTime()-start.getTime() < 10000);
         tid = (double)(slutt.getTime()-start.getTime()) / runder;
         return tid;
     }

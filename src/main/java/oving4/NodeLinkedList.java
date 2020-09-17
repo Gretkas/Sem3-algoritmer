@@ -1,12 +1,18 @@
 package oving4;
 
-public class Node<T> {
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
+public class NodeLinkedList<T> {
     private T value;
-    private Node<T> nodeNext;
+    private NodeLinkedList<T> nodeNext;
     private int key;
     private int hash;
 
-    public Node(T value, int key, int hash) {
+    public NodeLinkedList(T value, int key, int hash) {
         this.value = value;
         this.key = key;
         this.hash = hash;
@@ -17,7 +23,7 @@ public class Node<T> {
     public T getValue() {
         return value;
     }
-    public Node<T> getNodeNext() {
+    public NodeLinkedList<T> getNodeNext() {
         return nodeNext;
     }
     public int getKey() {
@@ -32,7 +38,7 @@ public class Node<T> {
     public void setValue(T value) {
         this.value = value;
     }
-    public void setNodeNext(Node<T> nodeNext) {
+    public void setNodeNext(NodeLinkedList<T> nodeNext) {
         this.nodeNext = nodeNext;
     }
     public void setKey(int key) {
@@ -42,8 +48,8 @@ public class Node<T> {
         this.hash = hash;
     }
 
-    public Node<T> copyOf(){
-        return new Node<>(this.value,this.key,this.hash);
+    public NodeLinkedList<T> copyOf(){
+        return new NodeLinkedList<>(this.value,this.key,this.hash);
     }
 
     @Override

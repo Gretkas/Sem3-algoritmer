@@ -41,6 +41,7 @@ public class HashTableDoubleHash {
                 hash %= size;
             }
             while (list[hash] != 0){
+                numCollitions++; //unsure if this counts as a collition or not
                 hash += hash2;
                 if(hash >= size){
                     hash %= size;
@@ -62,7 +63,9 @@ public class HashTableDoubleHash {
         list = new int[size];
 
         for (int i = 0; i < oldList.length; i++) {
-            this.add(oldList[i]);
+            if(oldList[i] != 0){
+                this.add(oldList[i]);
+            }
         }
     }
 
