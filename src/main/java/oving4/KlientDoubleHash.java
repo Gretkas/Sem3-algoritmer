@@ -7,7 +7,10 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class KlientDoubleHash {
-    private static HashTableDoubleHash hashTableDH = new HashTableDoubleHash(12001349,1f);
+    private static HashTableDoubleHash hashTableDH = new HashTableDoubleHash(2,0.75f);  //size: 12001349 ld: 1f
+    /*  size: 32768
+        16 -> 1861.0
+    * */
     private static int[] array = new int[(int)1e7];
     private static int[] numCollArray = new int[(int)1e7];
 
@@ -19,12 +22,19 @@ public class KlientDoubleHash {
             array[i] = random.nextInt(Integer.MAX_VALUE);
         }
 
+
+
+
         System.out.println("Time for our HashTable: " + timeHashTableDoubleHash());
         for (int i = 0; i < numCollArray.length; i++) {
             if(numCollArray[i] == 0) break;
             System.out.println("Number of collisions: " + numCollArray[i] + " in round number " + (i+1));
         }
         System.out.println("Our methods loadfactor: " + ((double)hashTableDH.getNumberOfElements()/hashTableDH.getSize()));
+
+        hashTableDH.add(123456789);
+        System.out.println(hashTableDH.search(123456789));
+
         System.out.println("------------------------------------------");
         System.out.println("Time for Javas HashSet: "+ timeJavaHashSet());
         System.out.println("Time for Javas HashMap: "+ timeJavaHashMap());

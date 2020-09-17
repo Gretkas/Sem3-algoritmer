@@ -69,10 +69,16 @@ public class HashTableDoubleHash {
 
     public boolean search(int value){
         int hash = hash(value);
+        if(hash >= size){
+            hash %= size;
+        }
         int hash2 = hash2(value);
         int stopIndex = hash;
         while (list[hash] != value){
             hash += hash2;
+            if(hash >= size){
+                hash %= size;
+            }
             if(hash == stopIndex){
                 return false;
             }
