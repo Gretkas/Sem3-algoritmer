@@ -1,13 +1,13 @@
 package oving5;
 
-public class Previous {
+public class NodeData {
     private int dist;
     private Node previous;
     private static final int inf = 1000000000;
     private int foundTime,finishedTime;
     private static int time;
 
-    public Previous() {
+    public NodeData() {
         this.dist = inf;
     }
 

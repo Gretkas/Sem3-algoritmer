@@ -3,24 +3,27 @@ package oving5;
 public class Node {
     private Edge edge;
     private int nodeNumber;
-    private Previous prev;
+    private NodeData prev;
+    private boolean finished;
 
     public Node(Edge edge, int nodeNumber) {
         this.edge = edge;
         this.nodeNumber = nodeNumber;
+        this.finished = false;
     }
 
     public Node(int nodeNumber){
         this.edge = null;
-        this.nodeNumber = nodeNumber+1;
+        this.nodeNumber = nodeNumber;
+        this.finished = false;
     }
 
 
 
-    public Previous getPrev() {
+    public NodeData getNodeData() {
         return prev;
     }
-    public void setPrev(Previous prev) {
+    public void setNodeData(NodeData prev) {
         this.prev = prev;
     }
     public Edge getEdge() {
@@ -34,5 +37,13 @@ public class Node {
     }
     public void setNodeNumber(int nodeNumber) {
         this.nodeNumber = nodeNumber;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }
