@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class KlientOv5 {
 
     public static void main(String[] args) throws IOException {
-        String path = "C:\\Users\\robvo\\Desktop\\resources\\oving5\\L7Skandinavia-navn.txt";
+        String path = "C:\\Users\\robvo\\Desktop\\resources\\oving5\\L7g6.txt";
 
         Graph g = new Graph();
         BufferedReader br = new BufferedReader(new FileReader(new File(path)));

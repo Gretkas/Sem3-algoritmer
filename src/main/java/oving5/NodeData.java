@@ -1,35 +1,19 @@
 package oving5;
 
 public class NodeData {
-    private int dist;
-    private Node previous;
-    private static final int inf = 1000000000;
+    private Node previousNode;
     private int foundTime,finishedTime;
     private static int time;
 
-    public NodeData() {
-        this.dist = inf;
+
+    public Node getPreviousNode() {
+        return previousNode;
     }
 
-    public int getDist() {
-        return dist;
+    public void setPreviousNode(Node previousNode) {
+        this.previousNode = previousNode;
     }
 
-    public Node getPrevious() {
-        return previous;
-    }
-
-    public void setDist(int dist) {
-        this.dist = dist;
-    }
-
-    public void setPrevious(Node previous) {
-        this.previous = previous;
-    }
-
-    public static int getInf() {
-        return inf;
-    }
 
     public int getFoundTime() {
         return foundTime;

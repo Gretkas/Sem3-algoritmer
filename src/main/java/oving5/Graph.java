@@ -7,14 +7,8 @@ import java.util.*;
 
 public class Graph {
     private int numberNode, numberEdge;
-    private ArrayList<Integer> aL;
+    private ArrayList<Integer> component;
     private Node[] nodes;
-
-    public Graph(int numberNode, int numberEdge, Node[] nodes) {
-        this.numberNode = numberNode;
-        this.numberEdge = numberEdge;
-        this.nodes = nodes;
-    }
 
     public Graph() {
         this.numberNode = 0;
@@ -47,13 +41,13 @@ public class Graph {
 
 
 
-    public ArrayList<ArrayList<Integer>> dfs(){
+    public void dfs(){
         dfsInit();
-        ArrayList<ArrayList<Integer>> aLaL = new ArrayList<>();
         for (int i = 0; i < nodes.length; i++) {
-            dfsHelper(aLaL, i);
+            if(nodes[i].getNodeData().getFoundTime() == 0){
+                dfsSearchStack(nodes[i],false);
+            }
         }
-        return aLaL;
     }
 
     private void dfsInit(){
@@ -65,11 +59,12 @@ public class Graph {
 
 
 
-    private void dfsSearchStack(Node nude){
+    private void dfsSearchStack(Node node, boolean collectData){
         Stack<Node> stack = new Stack<>();
-        nude.getNodeData().setFoundTime(NodeData.readTime());
-        stack.add(nude);
-        aL.add(nude.getNodeNumber());
+        node.getNodeData().setFoundTime(NodeData.readTime());
+        stack.add(node);
+        if(collectData) component.add(node.getNodeNumber());
+
         while (!stack.isEmpty()) {
             Node n = stack.pop();
 
@@ -83,10 +78,8 @@ public class Graph {
                     NodeData p2 = e.getNodeTo().getNodeData();
                     if(p2.getFoundTime() == 0){
                         p2.setFoundTime(NodeData.readTime());
-                        aL.add(e.getNodeTo().getNodeNumber());
-                        p2.setPrevious(n);
-                        p2.setDist(n.getNodeData().getDist()+1);
-
+                        if(collectData) component.add(e.getNodeTo().getNodeNumber());
+                        p2.setPreviousNode(n);
                         stack.add(e.getNodeTo());
                     }
                 }
@@ -97,10 +90,8 @@ public class Graph {
 
 
     public Node[] sortNodes(){
-        Node[] sortedNodes = Arrays.copyOf(nodes,numberNode);
-
-        Arrays.sort(sortedNodes, (o1, o2) -> o2.getNodeData().getFinishedTime()-o1.getNodeData().getFinishedTime());
-        return sortedNodes;
+        Arrays.sort(nodes, (o1, o2) -> o2.getNodeData().getFinishedTime()-o1.getNodeData().getFinishedTime());
+        return nodes;
     }
 
 
@@ -128,21 +119,20 @@ public class Graph {
 
     public ArrayList<ArrayList<Integer>> dfsReverse(Node[] orderedNodes){
         dfsInit();
-        ArrayList<ArrayList<Integer>> aLaL = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> components = new ArrayList<>();
         for (int i = 0; i < nodes.length; i++) {
             int cNN = orderedNodes[i].getNodeNumber();
-            dfsHelper(aLaL, cNN);
+            dfsHelper(components, cNN);
         }
-        return aLaL;
+        return components;
     }
 
-    private void dfsHelper(ArrayList<ArrayList<Integer>> aLaL, int cNN) {
+    private void dfsHelper(ArrayList<ArrayList<Integer>> components, int cNN) {
         if(nodes[cNN].getNodeData().getFoundTime() == 0){
-            aL = new ArrayList<>();
-            nodes[cNN].getNodeData().setDist(0);
-            dfsSearchStack(nodes[cNN]);
-            ArrayList<Integer> allaHuabhbar = new ArrayList<>(aL);
-            aLaL.add(allaHuabhbar);
+            component = new ArrayList<>();
+            dfsSearchStack(nodes[cNN],true);
+            ArrayList<Integer> componentCopy = new ArrayList<>(component);
+            components.add(componentCopy);
         }
     }
 

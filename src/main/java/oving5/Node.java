@@ -3,7 +3,7 @@ package oving5;
 public class Node {
     private Edge edge;
     private int nodeNumber;
-    private NodeData prev;
+    private NodeData nodeData;
     private boolean finished;
 
     public Node(Edge edge, int nodeNumber) {
@@ -21,10 +21,10 @@ public class Node {
 
 
     public NodeData getNodeData() {
-        return prev;
+        return nodeData;
     }
     public void setNodeData(NodeData prev) {
-        this.prev = prev;
+        this.nodeData = prev;
     }
     public Edge getEdge() {
         return edge;
