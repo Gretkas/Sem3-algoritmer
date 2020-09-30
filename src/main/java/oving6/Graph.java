@@ -33,6 +33,43 @@ public class Graph {
     }
 
 
+    private void initializeNodeData(int startIndex){
+        for (int i = 0; i < numberNode; i++) {
+            priorityQueue[i].setNodeData(new NodeData());
+        }
+        priorityQueue[startIndex].getNodeData().setDist(0);
+    }
+
+
+    public void startPriorityQueue(int startIndex){
+        initializeNodeData(startIndex);
+        Node n = priorityQueue[startIndex];
+        priorityQueue[startIndex] = priorityQueue[0];
+        priorityQueue[0] = n;
+    }
+
+
+    public void fixPriorityQueue(int index){
+        int swapIndex = (index<<1)+1;
+        int right = (index+1)<<1;
+        int dist = priorityQueue[swapIndex].getNodeData().getDist();
+
+        if(dist > priorityQueue[right].getNodeData().getDist()){
+            dist = priorityQueue[right].getNodeData().getDist();
+            swapIndex = right;
+        }
+        if (priorityQueue[index].getNodeData().getDist() > dist){
+            Node n = priorityQueue[index];
+            priorityQueue[index] = priorityQueue[swapIndex];
+            priorityQueue[swapIndex] = n;
+            fixPriorityQueue(swapIndex);
+        }
+    }
+
+    public void dijkstra(Node node){
+
+    }
+
 
 
 

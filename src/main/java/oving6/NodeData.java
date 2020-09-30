@@ -5,7 +5,9 @@ public class NodeData {
     private int dist;
     private static final int infinity = 2147483647<<1;
 
-
+    public NodeData() {
+        this.dist = infinity;
+    }
 
     public Node getPreviousNode() {
         return previousNode;

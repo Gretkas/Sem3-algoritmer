@@ -20,8 +20,8 @@ public class Node {
     public NodeData getNodeData() {
         return nodeData;
     }
-    public void setNodeData(NodeData prev) {
-        this.nodeData = prev;
+    public void setNodeData(NodeData nodeData) {
+        this.nodeData = nodeData;
     }
     public Edge getEdge() {
         return edge;
