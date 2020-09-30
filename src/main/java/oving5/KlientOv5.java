@@ -21,10 +21,8 @@ public class KlientOv5 {
         ArrayList<ArrayList<Integer>> scc = reverse.dfsReverse(g.sortNodes());
 
         System.out.println("Grafen L7g5 har "+scc.size()+" sterkt sammenhengende komponenter:");
-        if() {
-            for (int i = 0; i < scc.size(); i++) {
-                System.out.println("Komponent: " + (i + 1) + " Noder: " + scc.get(i).toString());
-            }
+        for (int i = 0; i < scc.size(); i++) {
+            System.out.println("Komponent: " + (i+1) + " Noder: " + scc.get(i).toString());
         }
 
     }
