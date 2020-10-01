@@ -2,8 +2,9 @@ package oving6;
 
 public class Node {
     private Edge edge;
-    private int nodeNumber;
+    private int nodeNumber, currentIndex;
     private NodeData nodeData;
+    private boolean isFinished;
 
     public Node(Edge edge, int nodeNumber) {
         this.edge = edge;
@@ -16,7 +17,18 @@ public class Node {
     }
 
 
-
+    public boolean isFinished() {
+        return isFinished;
+    }
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
+    public int getCurrentIndex() {
+        return currentIndex;
+    }
+    public void setCurrentIndex(int currentIndex) {
+        this.currentIndex = currentIndex;
+    }
     public NodeData getNodeData() {
         return nodeData;
     }

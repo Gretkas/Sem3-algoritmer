@@ -3,7 +3,7 @@ package oving6;
 public class NodeData {
     private Node previousNode;
     private int dist;
-    private static final int infinity = 2147483647<<1;
+    private static final int infinity = 2147483647>>1;
 
     public NodeData() {
         this.dist = infinity;
