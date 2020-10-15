@@ -52,7 +52,7 @@ public class Graph {
     }
 
 
-    public void bubbleDown(int index){
+    private void bubbleDown(int index){
         int swapIndex = (index<<1)+1;
         int right = (index+1)<<1;
         if(swapIndex>=numberNode || right>=numberNode) return;
@@ -69,7 +69,7 @@ public class Graph {
         }
     }
 
-    public void bubbleUp(int index){
+    private void bubbleUp(int index){
         int parentIndex = (index-1)>>1;
         if(parentIndex<0) return;
 
@@ -79,7 +79,7 @@ public class Graph {
         }
     }
 
-    public Node popPriorityQueue(int lastIndex){
+    private Node popPriorityQueue(int lastIndex){
         Node n = priorityQueue[0];
         n.setFinished(true);
         swapPQ(0,lastIndex); //test dette

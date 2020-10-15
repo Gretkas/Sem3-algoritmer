@@ -16,14 +16,17 @@ import java.util.ArrayList;
  */
 public class KlientOV6 {
     public static void main(String[] args) throws IOException {
-        String path = "C:\\Users\\robvo\\Desktop\\resources\\oving6\\vg1.txt";
+        int startNode = 0;
+        String graphStr = "vgSkandinavia";
+        String path = "C:\\Users\\robvo\\Desktop\\resources\\oving6\\" + graphStr + ".txt";
         BufferedReader br = new BufferedReader(new FileReader(new File(path)));
         Graph g = new Graph();
         g.newGraph(br);
-        
 
-        g.dijkstra(1);
+
+        g.dijkstra(startNode);
         g.sortResult();
+        System.out.println("Graph: " + graphStr + " start Node: " + startNode);
         for (int i = 0; i < g.getNumberNode(); i++) {
             Node n = g.getPriorityQueue()[i];
             String tidligereNode = "";
