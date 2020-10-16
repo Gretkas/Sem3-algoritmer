@@ -2,6 +2,7 @@ package oving7;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,15 +16,15 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress();
-        //lz.readFile();
-        lz.decompress();
+        //lz.compress();
+        lz.readFile();
+        //lz.decompress();
     }
 
 
 
     private void readFile() throws IOException {
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\test.txt")));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt")));
 
         bFilArr = new byte[innfil.available()];
         innfil.readFully(bFilArr, 0, innfil.available());
