@@ -16,9 +16,9 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        //lz.compress();
-        lz.readFile();
-        //lz.decompress();
+        lz.compress();
+        //lz.readFile();
+        lz.decompress();
     }
 
 
@@ -75,7 +75,7 @@ public class LZ {
 
 
     public void compress() throws IOException {
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.txt")));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt")));
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\test.txt")));
         int prevIndex = -1;
         int indexDos;
@@ -85,8 +85,14 @@ public class LZ {
         while (innfil.available() > 0){
 
             char currentChar = (char) innfil.readByte();
-            currentSequence.append(currentChar);
-            indexDos = sequences.indexOf(currentSequence.toString());
+            System.out.println((byte)currentChar);
+            if(currentChar > 0){
+                currentSequence.append(currentChar);
+                indexDos = sequences.indexOf(currentSequence.toString());
+            }else {
+                indexDos = -1;
+            }
+
             if(indexDos < 0){
                 sequences.add(currentSequence.toString());
                 if(currentSequence.length() > 2){
