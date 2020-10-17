@@ -13,6 +13,8 @@ import java.util.List;
 public class LZ {
     private byte[] bFilArr;
     private LinkedList<String> sequences = new LinkedList<>();
+    private String filePath = "C:\\Users\\robvo\\Desktop\\resources\\oving7\\";
+    private String identifier = "diverse.txt";
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
@@ -38,8 +40,8 @@ public class LZ {
 
     public void decompress() throws IOException {
         sequences = new LinkedList<>();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\test.txt")));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\decomp.txt")));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath + "comp" + identifier)));
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath + "decomp" + identifier)));
         byte[] currentOutputBlock;
 
         bFilArr = new byte[innfil.available()];
@@ -130,8 +132,8 @@ public class LZ {
 
     public void compress() throws IOException {
         sequences = new LinkedList<>();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.txt")));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\test.txt")));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath + identifier)));
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath + "comp" + identifier)));
         int prevIndex = -1;
         int indexDos;
         StringBuilder currentSequence = new StringBuilder();
