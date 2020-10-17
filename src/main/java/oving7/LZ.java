@@ -16,9 +16,9 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress();
-        //lz.readFile();
-        lz.decompress();
+        //lz.compress();
+        lz.readFile();
+        //lz.decompress();
     }
 
 
@@ -29,7 +29,8 @@ public class LZ {
         bFilArr = new byte[innfil.available()];
         innfil.readFully(bFilArr, 0, innfil.available());
         for (int i = 0; i < bFilArr.length; i++) {
-            System.out.println(bFilArr[i]);
+            if(bFilArr[i] == 44) System.out.println();
+            else System.out.println(Integer.toBinaryString(bFilArr[i] & 0xff));
         }
     }
 
@@ -82,30 +83,58 @@ public class LZ {
         StringBuilder currentSequence = new StringBuilder();
         byte[] currentOutputBlock;
 
-        while (innfil.available() > 0){
+        bFilArr = new byte[innfil.available()];
+        innfil.readFully(bFilArr, 0, innfil.available());
+        int byteIndex = 0;
 
-            char currentChar = (char) innfil.readByte();
-            System.out.println((byte)currentChar);
-            if(currentChar > 0){
-                currentSequence.append(currentChar);
-                indexDos = sequences.indexOf(currentSequence.toString());
+        while (byteIndex < bFilArr.length){
+
+            byte currentByte = bFilArr[byteIndex];
+            byteIndex++;
+            byte[] currentChar ;
+            int charLength = 1;
+
+            if(currentByte >= 0){
+                currentChar = new byte[1];
+                currentChar[0] = currentByte;
+                currentSequence.append((char)currentChar[0]);
             }else {
-                indexDos = -1;
+                currentChar = new byte[4];
+                currentChar[0] = currentByte;
+                while(bFilArr[byteIndex] < 0){
+                    currentChar[charLength] = bFilArr[byteIndex];
+                    byteIndex++;
+                    charLength++;
+                }
+                currentSequence.append(new String(currentChar));
             }
+
+            indexDos = sequences.indexOf(currentSequence.toString());
+
 
             if(indexDos < 0){
                 sequences.add(currentSequence.toString());
                 if(currentSequence.length() > 2){
-                    currentOutputBlock = new byte[4];
+                    currentOutputBlock = new byte[3+charLength];
+
                     currentOutputBlock[0] = (byte) (currentSequence.length()  & 0xff);
                     currentOutputBlock[1] = (byte) (prevIndex>>8);
                     currentOutputBlock[2] = (byte) (prevIndex & 0b11111111);
-                    currentOutputBlock[3] = (byte) (currentChar & 0xff);
+                    if(charLength == 1){
+                        currentOutputBlock[3] = (byte) (currentChar[0] & 0xff);
+                    }
+                    else{
+                        for (int i = 3; i < currentOutputBlock.length; i++) {
+                            currentOutputBlock[i] = currentChar[i-3];
+                        }
+                    }
                 }else {
-                    currentOutputBlock = new byte[currentSequence.length()+1];
+                    byte[] currentSequenceBytes = currentSequence.toString().getBytes();
+
+                    currentOutputBlock = new byte[currentSequenceBytes.length+1];
                     currentOutputBlock[0] = (byte) (-currentSequence.length() & 0xff);
-                    for (int i = 0; i < currentSequence.length(); i++) {
-                        currentOutputBlock[i+1] = (byte) (currentSequence.toString().charAt(i) & 0xff);
+                    for (int i = 0; i < currentSequenceBytes.length; i++) {
+                        currentOutputBlock[i+1] = currentSequenceBytes[i];
                     }
                 }
                 //System.out.println(currentOutputBlock[0]);
