@@ -18,7 +18,7 @@ public class LZ {
         LZ lz = new LZ();
         lz.compress();
         //lz.readFile();
-        //lz.decompress();
+        lz.decompress();
     }
 
 
@@ -42,26 +42,78 @@ public class LZ {
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\decomp.txt")));
         byte[] currentOutputBlock;
 
-        while (innfil.available() > 0) {
-            int currentBlockLength = innfil.readByte();
+        bFilArr = new byte[innfil.available()];
+        innfil.readFully(bFilArr, 0, innfil.available());
+        int byteIndex = 0;
+
+        while (byteIndex < bFilArr.length) {
+            int currentBlockLength = bFilArr[byteIndex++];
+            byte currentByte;
+            byte[] currentChar;
+            int charLength = 1;
 
             if(currentBlockLength > 0){
-                short index = innfil.readShort();
+                byte[] tempShort = {bFilArr[byteIndex++],bFilArr[byteIndex++]};
+                short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF));    //her kan det være feil!!!
                 StringBuilder currentSequence = new StringBuilder();
 
                 currentSequence.append(sequences.get(index));
-                currentSequence.append((char)innfil.readByte());
+                currentByte = bFilArr[byteIndex++];
+
+                if(currentByte >= 0){
+                    currentChar = new byte[1];
+                    currentChar[0] = currentByte;
+                    currentSequence.append((char)currentChar[0]);
+                }else {
+
+                    String binaryString = Integer.toBinaryString(currentByte & 0xff);
+                    for (int i = 1; i < 4; i++) {
+                        if(binaryString.charAt(i) == 49) charLength++;
+                        else break;
+                    }
+                    int tempIndex = 1;
+                    currentChar = new byte[charLength];
+                    currentChar[0] = currentByte;
+                    while(tempIndex < charLength){
+                        currentChar[tempIndex++] = bFilArr[byteIndex++];
+                    }
+                    currentSequence.append(new String(currentChar));
+                }
+
                 currentOutputBlock = currentSequence.toString().getBytes();
                 sequences.addLast(currentSequence.toString());
             }
             else{
                 int length = Math.abs(currentBlockLength);
                 currentOutputBlock = new byte[length];
+
                 StringBuilder currentSequence = new StringBuilder();
+
                 for (int i = 0; i < length; i++) {
-                    currentOutputBlock[i] = innfil.readByte();
-                    currentSequence.append((char)currentOutputBlock[i]);
+                    charLength = 1;
+                    currentByte = bFilArr[byteIndex++];
+                    if(currentByte >= 0) {
+
+                        currentOutputBlock[i] = currentByte;
+                        currentSequence.append((char)currentOutputBlock[i]);
+                    }
+                    else {
+                        String binaryString = Integer.toBinaryString(currentByte & 0xff);
+                        for (int j = 1; j < 4; j++) {
+                            if (binaryString.charAt(j) == 49) charLength++;
+                            else break;
+                        }
+                        int tempIndex = 1;
+                        currentChar = new byte[charLength];
+                        currentChar[0] = currentByte;
+                        while (tempIndex < charLength) {
+                            currentChar[tempIndex++] = bFilArr[byteIndex++];
+                        }
+
+                        currentSequence.append(new String(currentChar));
+                    }
                 }
+                currentOutputBlock = currentSequence.toString().getBytes();
                 sequences.addLast(currentSequence.toString());
             }
 
@@ -78,7 +130,7 @@ public class LZ {
 
     public void compress() throws IOException {
         sequences = new LinkedList<>();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt")));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.txt")));
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\test.txt")));
         int prevIndex = -1;
         int indexDos;
@@ -91,8 +143,7 @@ public class LZ {
 
         while (byteIndex < bFilArr.length){
 
-            byte currentByte = bFilArr[byteIndex];
-            byteIndex++;
+            byte currentByte = bFilArr[byteIndex++];
             byte[] currentChar ;
             int charLength = 1;
 
@@ -111,9 +162,7 @@ public class LZ {
                 currentChar = new byte[charLength];
                 currentChar[0] = currentByte;
                 while(tempIndex < charLength){
-                    currentChar[tempIndex] = bFilArr[byteIndex];
-                    byteIndex++;
-                    tempIndex++;
+                    currentChar[tempIndex++] = bFilArr[byteIndex++];
                 }
                 currentSequence.append(new String(currentChar));
             }
