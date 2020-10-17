@@ -16,14 +16,15 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        //lz.compress();
-        lz.readFile();
+        lz.compress();
+        //lz.readFile();
         //lz.decompress();
     }
 
 
 
     private void readFile() throws IOException {
+        /*ea,øåæ,롥㒨•,𩸽𝄑*/
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt")));
 
         bFilArr = new byte[innfil.available()];
@@ -76,6 +77,7 @@ public class LZ {
 
 
     public void compress() throws IOException {
+        sequences = new LinkedList<>();
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt")));
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\output\\test.txt")));
         int prevIndex = -1;
@@ -99,12 +101,19 @@ public class LZ {
                 currentChar[0] = currentByte;
                 currentSequence.append((char)currentChar[0]);
             }else {
-                currentChar = new byte[4];
+
+                String binaryString = Integer.toBinaryString(currentByte & 0xff);
+                for (int i = 1; i < 4; i++) {
+                    if(binaryString.charAt(i) == 49) charLength++;
+                    else break;
+                }
+                int tempIndex = 1;
+                currentChar = new byte[charLength];
                 currentChar[0] = currentByte;
-                while(bFilArr[byteIndex] < 0){
-                    currentChar[charLength] = bFilArr[byteIndex];
+                while(tempIndex < charLength){
+                    currentChar[tempIndex] = bFilArr[byteIndex];
                     byteIndex++;
-                    charLength++;
+                    tempIndex++;
                 }
                 currentSequence.append(new String(currentChar));
             }
