@@ -12,7 +12,7 @@ import java.util.List;
 
 public class LZ {
     private byte[] bFilArr;
-    private LinkedList<String> sequences = new LinkedList<>();
+    private ArrayList<String> sequences = new ArrayList<>();
     private String filePath = "C:\\Users\\robvo\\Desktop\\resources\\oving7\\";
     private String identifier = "diverse.txt";
 
@@ -39,7 +39,7 @@ public class LZ {
 
 
     public void decompress() throws IOException {
-        sequences = new LinkedList<>();
+        sequences = new ArrayList<>();
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath + "comp" + identifier)));
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath + "decomp" + identifier)));
         byte[] currentOutputBlock;
@@ -83,7 +83,7 @@ public class LZ {
                 }
 
                 currentOutputBlock = currentSequence.toString().getBytes();
-                sequences.addLast(currentSequence.toString());
+                sequences.add(currentSequence.toString());
             }
             else{
                 int length = Math.abs(currentBlockLength);
@@ -116,7 +116,7 @@ public class LZ {
                     }
                 }
                 currentOutputBlock = currentSequence.toString().getBytes();
-                sequences.addLast(currentSequence.toString());
+                sequences.add(currentSequence.toString());
             }
 
 
@@ -131,7 +131,7 @@ public class LZ {
 
 
     public void compress() throws IOException {
-        sequences = new LinkedList<>();
+        sequences = new ArrayList<>();
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath + identifier)));
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath + "comp" + identifier)));
         int prevIndex = -1;
@@ -213,7 +213,7 @@ public class LZ {
 
 
     private void trimList(){
-         sequences.removeFirst();
+         sequences.remove(0);
     }
 
 
