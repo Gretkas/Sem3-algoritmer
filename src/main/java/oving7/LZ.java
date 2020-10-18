@@ -13,16 +13,24 @@ import java.util.List;
 public class LZ {
     private byte[] bFilArr;
     private ArrayList<String> sequences = new ArrayList<>();
-    private String filePath = "C:\\Users\\robvo\\Desktop\\resources\\oving7\\";
-    private String identifier = "diverse.txt";
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress();
+        //lz.compress("/Users/sergiomartinez/Documents/algorithms/files/ov7/diverse.txt");
         //lz.readFile();
         lz.decompress();
     }
 
+    public void compress(String inputPath) throws IOException {
+        String[] arr = inputPath.split("\\.");
+        arr[arr.length-2] += "LZ";
+        StringBuilder outputPath = new StringBuilder();
+        for (int i = 0; i < arr.length-1; i++) {
+            outputPath.append(arr[i]).append(".");
+        }
+        outputPath.append(arr[arr.length-1]);
+        compress(inputPath, outputPath.toString());
+    }
 
 
     private void readFile() throws IOException {
@@ -40,8 +48,8 @@ public class LZ {
 
     public void decompress() throws IOException {
         sequences = new ArrayList<>();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath + "comp" + identifier)));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath + "decomp" + identifier)));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/compenwik8")));
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/compelsnwik8")));
         byte[] currentOutputBlock;
 
         bFilArr = new byte[innfil.available()];
@@ -130,10 +138,10 @@ public class LZ {
 
 
 
-    public void compress() throws IOException {
+    public void compress(String filePath, String outPath) throws IOException {
         sequences = new ArrayList<>();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath + identifier)));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filePath + "comp" + identifier)));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outPath)));
         int prevIndex = -1;
         int indexDos;
         StringBuilder currentSequence = new StringBuilder();

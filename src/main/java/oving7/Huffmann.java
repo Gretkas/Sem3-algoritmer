@@ -15,14 +15,18 @@ public class Huffmann {
 
 
     public void compress(String inputPath) throws IOException {
-        String[] arr = inputPath.split("\\.");
-        arr[arr.length-2] += "HM";
         StringBuilder outputPath = new StringBuilder();
-        for (int i = 0; i < arr.length-1; i++) {
-            outputPath.append(arr[i]).append(".");
+        if (inputPath.contains(".")) {
+            String[] arr = inputPath.split("\\.");
+            arr[arr.length-2] += "HM";
+            for (int i = 0; i < arr.length-1; i++) {
+                outputPath.append(arr[i]).append(".");
+            }
+            outputPath.append(arr[arr.length-1]);
+        }else {
+            outputPath.append(inputPath).append("HM");
         }
-        outputPath.append(arr[arr.length-1]);
-        compress(inputPath, outputPath.toString());
+       compress(inputPath, outputPath.toString());
     }
 
 
@@ -58,7 +62,7 @@ public class Huffmann {
             if((remainingInputBits == 0)){
                 currentInputByte = byteArrayFile[index++];
                 String tempBitString = nodes[currentInputByte+128].getBitString();
-                currentBitString = Long.parseLong(tempBitString);
+                currentBitString = Long.parseLong(tempBitString, 2);
                 remainingInputBits = tempBitString.length();
             }
 
@@ -86,10 +90,11 @@ public class Huffmann {
     private byte[] frequenciesToByteArr() {
         byte[] bytes = new byte[256<<2];
         for (int i = 0; i < frequencies.length; i++) {
-            bytes[i] = (byte) (frequencies[i] & 0xff);
-            bytes[i+1] = (byte) ((frequencies[i]>>8) & 0xff);
-            bytes[i+2] = (byte) ((frequencies[i]>>16) & 0xff);
-            bytes[i+3] = (byte) ((frequencies[i]>>24) & 0xff);
+            int j = i<<2;
+            bytes[j] = (byte) (frequencies[i] & 0xff);
+            bytes[j+1] = (byte) ((frequencies[i]>>8) & 0xff);
+            bytes[j+2] = (byte) ((frequencies[i]>>16) & 0xff);
+            bytes[j+3] = (byte) ((frequencies[i]>>24) & 0xff);
         }
         return bytes;
     }
