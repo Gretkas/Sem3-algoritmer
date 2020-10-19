@@ -16,8 +16,8 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.txt");
-        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverseLZ.txt");
+       // lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.pdf");
+        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverseLZ.pdf");
         //lz.readFile();
 //        lz.decompress();
     }
@@ -72,7 +72,7 @@ public class LZ {
                 byte[] tempShort = {bFilArr[byteIndex++],bFilArr[byteIndex++]};
                 short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF));    //her kan det være feil!!!
                 StringBuilder currentSequence = new StringBuilder();
-                for (int i = index; i <index+ currentBlockLength-1; i++) {
+                for (int i = index; i <index + currentBlockLength-1; i++) {
                     currentSequence.append(sequences.charAt(i));
                 }
                 currentByte = bFilArr[byteIndex++];

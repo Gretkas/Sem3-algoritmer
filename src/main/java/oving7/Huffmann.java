@@ -60,8 +60,6 @@ public class Huffmann {
             String binaryString = Integer.toBinaryString(byteArrayFile[index++] & 0xff);
             int byteIndex = binaryString.length();
             int leadingZeros = 8-binaryString.length();
-            int diff = leadingZeros;
-            System.out.println("lz: " + leadingZeros + " bs: " + binaryString);
 
             while(byteIndex > 0 || leadingZeros > 0){
                 byte currentBit;
@@ -136,28 +134,24 @@ public class Huffmann {
                 String tempBitString = nodes[currentInputByte+128].reverseBitString();
                 currentBitString = Long.parseLong(tempBitString, 2);
                 remainingInputBits = tempBitString.length();
-                System.out.println("tbs:" + tempBitString);
             }
 
             while(remainingInputBits > 0 && remainingOutputBits > 0){
                 if(remainingInputBits >= remainingOutputBits){
                     /*(2^n)-1*/
                     //byte bitOperator = (byte) (Math.pow(2,remainingOutputBits)-1);// &bo
-                  
+
 
                     currentOutputByte |= ((currentBitString/* >> (remainingInputBits-remainingOutputBits)*/) << (8-remainingOutputBits)); // her er feilen?
                     remainingInputBits -= remainingOutputBits;
                     currentBitString >>= remainingOutputBits;
                     remainingOutputBits = 0;
-                    System.out.println("if: " + currentOutputByte);
                 }else{
                     currentOutputByte |= (currentBitString << (8-remainingOutputBits));
                     remainingOutputBits -= remainingInputBits;
                     remainingInputBits = 0;
-                    System.out.println("else: " + currentOutputByte);
 
                 }
-                System.out.println("cbs:" + currentBitString);
             }
         }
         if(remainingOutputBits != 8) utfil.writeByte(currentOutputByte);
