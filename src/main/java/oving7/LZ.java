@@ -12,13 +12,13 @@ import java.util.List;
 
 public class LZ {
     private byte[] bFilArr;
-    private ArrayList<String> sequences = new ArrayList<>();
+    private StringBuffer sequences = new StringBuffer();
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        //lz.compress("/Users/sergiomartinez/Documents/algorithms/files/ov7/diverse.txt");
+        lz.compress("/Users/sergiomartinez/Documents/algorithms/files/ov7/test.txt");
         //lz.readFile();
-        lz.decompress();
+//        lz.decompress();
     }
 
     public void compress(String inputPath) throws IOException {
@@ -47,9 +47,9 @@ public class LZ {
 
 
     public void decompress() throws IOException {
-        sequences = new ArrayList<>();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/compenwik8")));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/compelsnwik8")));
+        sequences = new StringBuffer();
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/testLZ.txt")));
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/testDE.txt")));
         byte[] currentOutputBlock;
 
         bFilArr = new byte[innfil.available()];
@@ -66,8 +66,10 @@ public class LZ {
                 byte[] tempShort = {bFilArr[byteIndex++],bFilArr[byteIndex++]};
                 short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF));    //her kan det være feil!!!
                 StringBuilder currentSequence = new StringBuilder();
-
-                currentSequence.append(sequences.get(index));
+                System.out.println(byteIndex);
+                for (int i = index; i <index+ currentBlockLength-1; i++) {
+                    currentSequence.append(sequences.charAt(i));
+                }
                 currentByte = bFilArr[byteIndex++];
 
                 if(currentByte >= 0){
@@ -91,7 +93,7 @@ public class LZ {
                 }
 
                 currentOutputBlock = currentSequence.toString().getBytes();
-                sequences.add(currentSequence.toString());
+                sequences.append(currentSequence.toString());
             }
             else{
                 int length = Math.abs(currentBlockLength);
@@ -124,12 +126,12 @@ public class LZ {
                     }
                 }
                 currentOutputBlock = currentSequence.toString().getBytes();
-                sequences.add(currentSequence.toString());
+                sequences.append(currentSequence.toString());
             }
 
 
             utfil.write(currentOutputBlock);
-            if(sequences.size() > 1<<15) trimList();
+            if(sequences.length() > 1<<15) trimList();
         }
         innfil.close();
         utfil.flush();
@@ -139,7 +141,7 @@ public class LZ {
 
 
     public void compress(String filePath, String outPath) throws IOException {
-        sequences = new ArrayList<>();
+        sequences = new StringBuffer();
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)));
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outPath)));
         int prevIndex = -1;
@@ -150,7 +152,8 @@ public class LZ {
         bFilArr = new byte[innfil.available()];
         innfil.readFully(bFilArr, 0, innfil.available());
         int byteIndex = 0;
-
+        boolean lastUncompressed = false;
+        StringBuffer uncompressedOut = new StringBuffer();
         while (byteIndex < bFilArr.length){
 
             byte currentByte = bFilArr[byteIndex++];
@@ -180,9 +183,26 @@ public class LZ {
             indexDos = sequences.indexOf(currentSequence.toString());
 
 
-            if(indexDos < 0){
-                sequences.add(currentSequence.toString());
+
+            if(indexDos < 0 || byteIndex == bFilArr.length){
+                System.out.println(currentSequence);
+                if (currentSequence.length() > 2) {
+                    lastUncompressed = false;
+                }
+                sequences.append(currentSequence.toString());
+                if (!lastUncompressed) {
+                    byte[] currentSequenceBytes = uncompressedOut.toString().getBytes();
+                    currentOutputBlock = new byte[currentSequenceBytes.length+1];
+                    currentOutputBlock[0] = (byte) (-uncompressedOut.length() & 0xff);
+                    for (int i = 0; i < currentSequenceBytes.length; i++) {
+                        currentOutputBlock[i+1] = currentSequenceBytes[i];
+                    }
+                    utfil.write(currentOutputBlock);
+
+                    uncompressedOut = new StringBuffer();
+                }
                 if(currentSequence.length() > 2){
+
                     currentOutputBlock = new byte[3+charLength];
 
                     currentOutputBlock[0] = (byte) (currentSequence.length()  & 0xff);
@@ -196,23 +216,28 @@ public class LZ {
                             currentOutputBlock[i] = currentChar[i-3];
                         }
                     }
+                    utfil.write(currentOutputBlock);
                 }else {
-                    byte[] currentSequenceBytes = currentSequence.toString().getBytes();
-
-                    currentOutputBlock = new byte[currentSequenceBytes.length+1];
-                    currentOutputBlock[0] = (byte) (-currentSequence.length() & 0xff);
-                    for (int i = 0; i < currentSequenceBytes.length; i++) {
-                        currentOutputBlock[i+1] = currentSequenceBytes[i];
-                    }
+                    uncompressedOut.append(currentSequence.toString());
+                    lastUncompressed = true;
                 }
                 //System.out.println(currentOutputBlock[0]);
-                utfil.write(currentOutputBlock);
                 prevIndex = -1;
                 currentSequence = new StringBuilder();
-                if(sequences.size() > 1<<15) trimList();
+                if(sequences.length() > 1<<15) trimList();
             }else {
                 prevIndex = indexDos;
             }
+        }
+        if (uncompressedOut.length()>0) {
+            byte[] currentSequenceBytes = uncompressedOut.toString().getBytes();
+            System.out.println(uncompressedOut.toString());
+            currentOutputBlock = new byte[currentSequenceBytes.length+1];
+            currentOutputBlock[0] = (byte) (-uncompressedOut.length() & 0xff);
+            for (int i = 0; i < currentSequenceBytes.length; i++) {
+                currentOutputBlock[i+1] = currentSequenceBytes[i];
+            }
+            utfil.write(currentOutputBlock);
         }
         innfil.close();
         utfil.flush();
@@ -221,7 +246,7 @@ public class LZ {
 
 
     private void trimList(){
-         sequences.remove(0);
+        sequences.delete(0, sequences.length() - (1 << 15));
     }
 
 
