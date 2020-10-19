@@ -63,13 +63,13 @@ public class Huffmann {
             int diff = leadingZeros;
             System.out.println("lz: " + leadingZeros + " bs: " + binaryString);
 
-            while(byteIndex > diff){
+            while(byteIndex > 0 || leadingZeros > 0){
                 byte currentBit;
-                if(leadingZeros > 0){
+                if(byteIndex > 0){
+                    currentBit = (byte) (binaryString.charAt((byteIndex--)-1)-48);
+                }else{
                     currentBit = 0;
                     leadingZeros--;
-                }else{
-                    currentBit = (byte) (binaryString.charAt((byteIndex--)-1)-48);
                 }
 
 
@@ -133,7 +133,7 @@ public class Huffmann {
             }
             if((remainingInputBits == 0)){
                 currentInputByte = byteArrayFile[index++];
-                String tempBitString = nodes[currentInputByte+128].getBitString();
+                String tempBitString = nodes[currentInputByte+128].reverseBitString();
                 currentBitString = Long.parseLong(tempBitString, 2);
                 remainingInputBits = tempBitString.length();
                 System.out.println("tbs:" + tempBitString);
@@ -143,19 +143,13 @@ public class Huffmann {
                 if(remainingInputBits >= remainingOutputBits){
                     /*(2^n)-1*/
                     //byte bitOperator = (byte) (Math.pow(2,remainingOutputBits)-1);// &bo
-                    StringBuilder tempBitOperator = new StringBuilder();
-                    for (int i = 0; i < remainingInputBits - remainingOutputBits; i++) {
-                        tempBitOperator.append("1");
-                    }
-                    long bitOperator = Long.parseLong(tempBitOperator.toString());
+                  
 
-
-                    currentOutputByte |= ((currentBitString >> (remainingInputBits-remainingOutputBits)) << (8-remainingOutputBits));
+                    currentOutputByte |= ((currentBitString/* >> (remainingInputBits-remainingOutputBits)*/) << (8-remainingOutputBits)); // her er feilen?
                     remainingInputBits -= remainingOutputBits;
-                    currentBitString &= bitOperator;
+                    currentBitString >>= remainingOutputBits;
                     remainingOutputBits = 0;
                     System.out.println("if: " + currentOutputByte);
-                    System.out.println("bo: " + bitOperator);
                 }else{
                     currentOutputByte |= (currentBitString << (8-remainingOutputBits));
                     remainingOutputBits -= remainingInputBits;

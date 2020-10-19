@@ -22,7 +22,12 @@ public class Node implements Comparable<Node> {
 
 
     public void appendBitString(String bit){
-        this.bitString = bitString + bit;
+        this.bitString = bit + bitString;
+    }
+
+    public String reverseBitString(){
+        StringBuilder sb = new StringBuilder(bitString);
+        return sb.reverse().toString();
     }
 
 
