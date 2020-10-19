@@ -14,6 +14,79 @@ public class Huffmann {
     }
 
 
+
+    public void deCompress(String inputPath) throws IOException {
+        StringBuilder outputPath = new StringBuilder();
+        if (inputPath.contains(".")) {
+            String[] arr = inputPath.split("\\.");
+            arr[arr.length-2] += "Decomp";
+            for (int i = 0; i < arr.length-1; i++) {
+                outputPath.append(arr[i]).append(".");
+            }
+            outputPath.append(arr[arr.length-1]);
+        }else {
+            outputPath.append(inputPath).append("Decomp");
+        }
+        deCompress(inputPath, outputPath.toString());
+    }
+
+
+    public void deCompress(String inputPath, String outputPath) throws IOException {
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(inputPath)));
+        generateFrequencyArray(innfil);
+        byteArrayFile = new byte[innfil.available()];
+        innfil.readFully(byteArrayFile, 0, innfil.available());
+        innfil.close();
+
+
+        generateTree();
+        deCompressionHelper(outputPath);
+    }
+
+    private void generateFrequencyArray(DataInputStream innfil) throws IOException {
+        for (int i = 0; i < frequencies.length; i++) {
+            frequencies[i] = innfil.readInt();
+        }
+    }
+
+
+    private void deCompressionHelper(String outputPath) throws IOException {
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputPath)));
+        Node currentNode = rootNode;
+        byte currentOutputChar;
+
+        int index = 0;
+        while (index < byteArrayFile.length){
+            String binaryString = Integer.toBinaryString(byteArrayFile[index++] & 0xff);
+            int byteIndex = 0;
+            int leadingZeros = 8-binaryString.length();
+            int diff = 8 - leadingZeros;
+
+            while(byteIndex < diff){
+                byte currentBit;
+                if(leadingZeros > 0){
+                    currentBit = 0;
+                    leadingZeros--;
+                }else{
+                    currentBit = (byte) (binaryString.charAt(byteIndex++)-48);
+                }
+
+
+                if(currentBit == 1) currentNode = currentNode.getNodeRight();
+                else currentNode = currentNode.getNodeLeft();
+
+                if(currentNode.isLeafNode()){
+                    currentOutputChar = (byte) (currentNode.getAsciiValue()-128);
+                    utfil.writeByte(currentOutputChar);
+                    currentNode = rootNode;
+                }
+            }
+        }
+        utfil.flush();
+        utfil.close();
+    }
+
+
     public void compress(String inputPath) throws IOException {
         StringBuilder outputPath = new StringBuilder();
         if (inputPath.contains(".")) {
@@ -29,7 +102,6 @@ public class Huffmann {
        compress(inputPath, outputPath.toString());
     }
 
-
     public void compress(String inputPath, String outputPath) throws IOException {
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(inputPath)));
         byteArrayFile = new byte[innfil.available()];
@@ -42,7 +114,6 @@ public class Huffmann {
         generateTree();
         compressionHelper(outputPath);
     }
-
 
     private void compressionHelper(String outputPath) throws IOException {
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputPath)));
@@ -64,13 +135,14 @@ public class Huffmann {
                 String tempBitString = nodes[currentInputByte+128].getBitString();
                 currentBitString = Long.parseLong(tempBitString, 2);
                 remainingInputBits = tempBitString.length();
+
             }
 
             while(remainingInputBits > 0 && remainingOutputBits > 0){
                 if(remainingInputBits >= remainingOutputBits){
                     /*(2^n)-1*/
-                    byte bitOperator = (byte) (Math.pow(2,remainingOutputBits)-1);
-                    currentOutputByte |= ((currentBitString & bitOperator) << (8-remainingOutputBits));
+                    byte bitOperator = (byte) (Math.pow(2,remainingOutputBits)-1);// &bo
+                    currentOutputByte |= ((currentBitString >> (remainingInputBits-remainingOutputBits)) << (8-remainingOutputBits));
                     remainingInputBits -= remainingOutputBits;
                     currentBitString >>= remainingOutputBits;
                     remainingOutputBits = 0;
@@ -82,6 +154,7 @@ public class Huffmann {
                 }
             }
         }
+        if(remainingOutputBits != 8) utfil.writeByte(currentOutputByte);
         utfil.flush();
         utfil.close();
 
@@ -91,16 +164,15 @@ public class Huffmann {
         byte[] bytes = new byte[256<<2];
         for (int i = 0; i < frequencies.length; i++) {
             int j = i<<2;
-            bytes[j] = (byte) (frequencies[i] & 0xff);
-            bytes[j+1] = (byte) ((frequencies[i]>>8) & 0xff);
-            bytes[j+2] = (byte) ((frequencies[i]>>16) & 0xff);
-            bytes[j+3] = (byte) ((frequencies[i]>>24) & 0xff);
+            bytes[j] = (byte) ((frequencies[i]>>24) & 0xff);
+            bytes[j+1] = (byte) ((frequencies[i]>>16) & 0xff);
+            bytes[j+2] = (byte) ((frequencies[i]>>8) & 0xff);
+            bytes[j+3] = (byte) (frequencies[i] & 0xff);
         }
         return bytes;
     }
 
 
-    public void deCompress(){}
 
     private void generateTree(){
         PriorityQueue<Node> frequencyPQ = new PriorityQueue<>();
@@ -142,6 +214,7 @@ public class Huffmann {
         }
     }
 
-
-
+    public int[] getFrequencies() {
+        return frequencies;
+    }
 }
