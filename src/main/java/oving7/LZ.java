@@ -16,7 +16,8 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress("/Users/sergiomartinez/Documents/algorithms/files/ov7/test.txt");
+        lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.txt");
+        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverseLZ.txt");
         //lz.readFile();
 //        lz.decompress();
     }
@@ -32,24 +33,21 @@ public class LZ {
         compress(inputPath, outputPath.toString());
     }
 
-
-    private void readFile() throws IOException {
-        /*ea,øåæ,롥㒨•,𩸽𝄑*/
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt")));
-
-        bFilArr = new byte[innfil.available()];
-        innfil.readFully(bFilArr, 0, innfil.available());
-        for (int i = 0; i < bFilArr.length; i++) {
-            if(bFilArr[i] == 44) System.out.println();
-            else System.out.println(Integer.toBinaryString(bFilArr[i] & 0xff));
+    public void decompress(String inputPath) throws IOException {
+        String[] arr = inputPath.split("\\.");
+        arr[arr.length-2] += "Decomp";
+        StringBuilder outputPath = new StringBuilder();
+        for (int i = 0; i < arr.length-1; i++) {
+            outputPath.append(arr[i]).append(".");
         }
+        outputPath.append(arr[arr.length-1]);
+        decompress(inputPath, outputPath.toString());
     }
 
-
-    public void decompress() throws IOException {
+    public void decompress(String compressedFile, String output) throws IOException {
         sequences = new StringBuffer();
-        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/testLZ.txt")));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream("/Users/sergiomartinez/Documents/algorithms/files/ov7/testDE.txt")));
+        DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(compressedFile)));
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(output)));
         byte[] currentOutputBlock;
 
         bFilArr = new byte[innfil.available()];
@@ -182,9 +180,7 @@ public class LZ {
 
             indexDos = sequences.indexOf(currentSequence.toString());
 
-
-
-            if(indexDos < 0 || byteIndex == bFilArr.length){
+            if(indexDos < 0 || byteIndex == bFilArr.length || currentSequence.length() > 126){
                 System.out.println(currentSequence);
                 if (currentSequence.length() > 2) {
                     lastUncompressed = false;
