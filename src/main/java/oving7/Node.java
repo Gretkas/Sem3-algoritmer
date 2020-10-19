@@ -22,7 +22,7 @@ public class Node implements Comparable<Node> {
 
 
     public void appendBitString(String bit){
-        this.bitString = bit + bitString;
+        this.bitString = bitString + bit;
     }
 
 

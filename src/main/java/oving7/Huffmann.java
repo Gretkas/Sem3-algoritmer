@@ -58,17 +58,18 @@ public class Huffmann {
         int index = 0;
         while (index < byteArrayFile.length){
             String binaryString = Integer.toBinaryString(byteArrayFile[index++] & 0xff);
-            int byteIndex = 0;
+            int byteIndex = binaryString.length();
             int leadingZeros = 8-binaryString.length();
-            int diff = 8 - leadingZeros;
+            int diff = leadingZeros;
+            System.out.println("lz: " + leadingZeros + " bs: " + binaryString);
 
-            while(byteIndex < diff){
+            while(byteIndex > diff){
                 byte currentBit;
                 if(leadingZeros > 0){
                     currentBit = 0;
                     leadingZeros--;
                 }else{
-                    currentBit = (byte) (binaryString.charAt(byteIndex++)-48);
+                    currentBit = (byte) (binaryString.charAt((byteIndex--)-1)-48);
                 }
 
 
@@ -135,23 +136,34 @@ public class Huffmann {
                 String tempBitString = nodes[currentInputByte+128].getBitString();
                 currentBitString = Long.parseLong(tempBitString, 2);
                 remainingInputBits = tempBitString.length();
-
+                System.out.println("tbs:" + tempBitString);
             }
 
             while(remainingInputBits > 0 && remainingOutputBits > 0){
                 if(remainingInputBits >= remainingOutputBits){
                     /*(2^n)-1*/
-                    byte bitOperator = (byte) (Math.pow(2,remainingOutputBits)-1);// &bo
+                    //byte bitOperator = (byte) (Math.pow(2,remainingOutputBits)-1);// &bo
+                    StringBuilder tempBitOperator = new StringBuilder();
+                    for (int i = 0; i < remainingInputBits - remainingOutputBits; i++) {
+                        tempBitOperator.append("1");
+                    }
+                    long bitOperator = Long.parseLong(tempBitOperator.toString());
+
+
                     currentOutputByte |= ((currentBitString >> (remainingInputBits-remainingOutputBits)) << (8-remainingOutputBits));
                     remainingInputBits -= remainingOutputBits;
-                    currentBitString >>= remainingOutputBits;
+                    currentBitString &= bitOperator;
                     remainingOutputBits = 0;
-
+                    System.out.println("if: " + currentOutputByte);
+                    System.out.println("bo: " + bitOperator);
                 }else{
                     currentOutputByte |= (currentBitString << (8-remainingOutputBits));
                     remainingOutputBits -= remainingInputBits;
                     remainingInputBits = 0;
+                    System.out.println("else: " + currentOutputByte);
+
                 }
+                System.out.println("cbs:" + currentBitString);
             }
         }
         if(remainingOutputBits != 8) utfil.writeByte(currentOutputByte);
