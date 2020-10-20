@@ -54,6 +54,7 @@ public class Huffmann {
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputPath)));
         Node currentNode = rootNode;
         byte currentOutputChar;
+        int numChars = findNumChars()          ;   //change to long if compressing larger files than 2Gb //using this to prevent the last byte from writing extra chars.
 
         int index = 0;
         while (index < byteArrayFile.length){
@@ -61,7 +62,7 @@ public class Huffmann {
             int byteIndex = binaryString.length();
             int leadingZeros = 8-binaryString.length();
 
-            while(byteIndex > 0 || leadingZeros > 0){
+            while(numChars > 0 && (byteIndex > 0 || leadingZeros > 0)){
                 byte currentBit;
                 if(byteIndex > 0){
                     currentBit = (byte) (binaryString.charAt((byteIndex--)-1)-48);
@@ -77,12 +78,21 @@ public class Huffmann {
                 if(currentNode.isLeafNode()){
                     currentOutputChar = (byte) (currentNode.getAsciiValue()-128);
                     utfil.writeByte(currentOutputChar);
+                    numChars--;
                     currentNode = rootNode;
                 }
             }
         }
         utfil.flush();
         utfil.close();
+    }
+
+    private int findNumChars() {
+        int numChars = 0;
+        for (int i = 0; i < frequencies.length; i++) {
+            numChars += frequencies[i];
+        }
+        return numChars;
     }
 
 

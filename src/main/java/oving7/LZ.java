@@ -16,10 +16,8 @@ public class LZ {
 
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-       // lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.pdf");
-        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverseLZ.pdf");
-        //lz.readFile();
-//        lz.decompress();
+        lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFil.txt");
+        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\testFilLZ.txt");
     }
 
     public void compress(String inputPath) throws IOException {
@@ -62,19 +60,31 @@ public class LZ {
         innfil.readFully(bFilArr, 0, innfil.available());
         int byteIndex = 0;
 
+
         while (byteIndex < bFilArr.length) {
             int currentBlockLength = bFilArr[byteIndex++];
             byte currentByte;
             byte[] currentChar;
             int charLength = 1;
 
+
+
+
             if(currentBlockLength > 0){
                 byte[] tempShort = {bFilArr[byteIndex++],bFilArr[byteIndex++]};
                 short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF));    //her kan det være feil!!!
                 StringBuilder currentSequence = new StringBuilder();
+
+                if(index == 8162){
+                    System.out.println("inni if et sted");
+                }
+
+
                 for (int i = index; i <index + currentBlockLength-1; i++) {
                     currentSequence.append(sequences.charAt(i));
                 }
+
+
                 currentByte = bFilArr[byteIndex++];
 
                 if(currentByte >= 0){
@@ -152,18 +162,24 @@ public class LZ {
         int prevIndex = -1;
         int indexDos;
         StringBuilder currentSequence = new StringBuilder();
-        byte[] currentOutputBlock;
+        byte[] currentOutputBlock = {};
 
         bFilArr = new byte[innfil.available()];
         innfil.readFully(bFilArr, 0, innfil.available());
         int byteIndex = 0;
         boolean lastUncompressed = false;
         StringBuffer uncompressedOut = new StringBuffer();
+
+
+
+
         while (byteIndex < bFilArr.length){
 
             byte currentByte = bFilArr[byteIndex++];
             byte[] currentChar ;
             int charLength = 1;
+
+
 
             if(currentByte >= 0){
                 currentChar = new byte[1];
@@ -206,17 +222,24 @@ public class LZ {
                     if(charLength == 1){
                         currentOutputBlock[3] = (byte) (currentChar[0] & 0xff);
                     }
+
+                    if(currentOutputBlock[1] == 31 && currentOutputBlock[2] == -30){
+                        System.out.println("inni comp");
+                    }
+
                     else{
                         for (int i = 3; i < currentOutputBlock.length; i++) {
                             currentOutputBlock[i] = currentChar[i-3];
                         }
                     }
+
+
                     utfil.write(currentOutputBlock);
                 }else {
                     uncompressedOut.append(currentSequence.toString());
                     lastUncompressed = true;
                 }
-                prevIndex = -1;
+                //prevIndex = -1;
                 currentSequence = new StringBuilder();
                 if(sequences.length() > 1<<15) trimList();
             }else {
@@ -242,13 +265,11 @@ public class LZ {
         utfil.write(currentOutputBlock);
     }
 
+    
 
     private void trimList(){
         sequences.delete(0, sequences.length() - (1 << 15));
     }
-
-
-
 
 
 
