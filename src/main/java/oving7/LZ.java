@@ -3,16 +3,32 @@ package oving7;
 import java.io.*;
 import java.util.Arrays;
 
+/**
+ * Only works with UTF-8 encoded files!
+ */
 public class LZ {
     private byte[] bFilArr;
     private StringBuffer sequences = new StringBuffer();
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws IOException the io exception
+     */
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverse.lyx");
-        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\diverseLZ.lyx");
+        lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fusk.txt");
+        lz.decompress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fuskLZ.txt");
     }
 
+
+    /**
+     * Compress.
+     * Helper method for compress. Handles the output path if only running LZ and not huffmann
+     * @param inputPath the input path
+     * @throws IOException the io exception
+     */
     public void compress(String inputPath) throws IOException {
         StringBuilder outputPath = new StringBuilder();
         if (inputPath.contains(".")) {
@@ -28,6 +44,12 @@ public class LZ {
         compress(inputPath, outputPath.toString());
     }
 
+    /**
+     * Decompress.
+     * Helper method for deCompress. Handles the output path if only running LZ and not huffmann
+     * @param inputPath the input path
+     * @throws IOException the io exception
+     */
     public void decompress(String inputPath) throws IOException {
         StringBuilder outputPath = new StringBuilder();
         if (inputPath.contains(".")) {
@@ -43,6 +65,13 @@ public class LZ {
         decompress(inputPath, outputPath.toString());
     }
 
+    /**
+     * Decompress.
+     *
+     * @param compressedFile the compressed file
+     * @param output         the output
+     * @throws IOException the io exception
+     */
     public void decompress(String compressedFile, String output) throws IOException {
         sequences = new StringBuffer();
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(compressedFile)));
@@ -60,37 +89,14 @@ public class LZ {
             byte[] currentChar;
             int charLength = 1;
 
-
-
-
             if(currentBlockLength > 0){
                 byte[] tempShort = {bFilArr[byteIndex++],bFilArr[byteIndex++]};
-                short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF));    //her kan det være feil!!!
+                short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF));
                 StringBuilder currentSequence = new StringBuilder();
 
-
-                for (int i = index;(i <index + currentBlockLength)/* && (i< sequences.length())*/; i++) { //var -1 før
+                for (int i = index;(i <index + currentBlockLength); i++) {
                     currentSequence.append(sequences.charAt(i));
                 }
-
-
-                //start av test
-                /*if(currentSequence.charAt(currentSequence.length()) > ){
-                    currentChar = new byte[1];
-                    currentChar[0] = currentByte;
-                    currentSequence.append((char)currentChar[0]);
-                }else {
-
-                    String binaryString = Integer.toBinaryString(currentByte & 0xff);
-                    for (int i = 1; i < 4; i++) {
-                        if(binaryString.charAt(i) == 49) charLength++;
-                        else break;
-                    }
-                }*/
-                //slutt av test
-
-                //går tom for characerts
-
 
                 currentByte = bFilArr[byteIndex++];
 
@@ -163,7 +169,13 @@ public class LZ {
     }
 
 
-
+    /**
+     * Compress.
+     *
+     * @param filePath the file path
+     * @param outPath  the out path
+     * @throws IOException the io exception
+     */
     public void compress(String filePath, String outPath) throws IOException {
         sequences = new StringBuffer();
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)));
@@ -203,38 +215,24 @@ public class LZ {
                 currentChar = new byte[charLength];
                 currentChar[0] = currentByte;
                 while(tempIndex < charLength){
-                    currentChar[tempIndex++] = bFilArr[byteIndex++];
+                    currentChar[tempIndex++] = (byte) (bFilArr[byteIndex++] & 0xff); //la til &0xff
                 }
                 currentSequence.append(new String(currentChar));
             }
 
             indexDos = sequences.indexOf(currentSequence.toString());
 
-            if(indexDos < 0 || byteIndex == bFilArr.length || currentSequence.length() > 126){
-                int length = handleLength(currentSequence);
-                if (length > 2) {
+            if(indexDos < 0 || byteIndex == bFilArr.length || currentSequence.length() > 126 || uncompressedOut.length() > 126){
+                if (currentSequence.length() > 3) {
                     lastUncompressed = false;
                 }
                 sequences.append(currentSequence.toString());
-                if (!lastUncompressed) {
+                if (!lastUncompressed || uncompressedOut.length() > 126) { //la til: || uncompressedOut.length() > 127
                     writeUncompressed(utfil, uncompressedOut);
                     uncompressedOut = new StringBuilder();
                 }
-                if(length > 2){
+                if(currentSequence.length() > 3){
 
-
-                    /*int sequenceLength = currentSequence.length();
-                    System.out.println(Integer.toBinaryString(currentSequence.charAt(currentSequence.length()-1) & 0xff));
-                    if(Integer.toBinaryString(currentSequence.charAt(currentSequence.length()-2)).charAt(0) == '1' && Integer.toBinaryString(currentSequence.charAt(currentSequence.length()-2)).length() == 8){   //vi har den for å fikse en feil med blokklengden og tegn på 4 bytes
-                        System.out.println("if kjører");
-                        byte x = (byte) ((byte) currentSequence.charAt(currentSequence.length()-2) & 0xff);
-                        String bitStr = Integer.toBinaryString(x);
-                        int xLength = 0;
-                        for (int i = 0; i < 4; i++) {
-                            if (bitStr.charAt(i) == 49) xLength++;
-                        }
-                        if(xLength == 4) sequenceLength--;
-                    }*/
 
 
                     String strCurrentCharLength = new String(currentChar);
@@ -250,10 +248,30 @@ public class LZ {
 
                     else{
                         for (int i = 3; i < currentOutputBlock.length; i++) {
-                            currentOutputBlock[i] = currentChar[i-3];
+                            currentOutputBlock[i] = (byte) (currentChar[i-3] & 0xff);   //la til & 0xff
                         }
                     }
+                    //testing
 
+                    byte lastByte = 0;
+                    for (int i = 0; i < currentOutputBlock.length; i++) {
+                        if(lastByte == currentOutputBlock[i] && lastByte == -13){
+                            String binaryString = Integer.toBinaryString(currentByte & 0xff);
+                            System.out.println(binaryString);
+                            for (int j = 3; j < currentOutputBlock.length; j++) {
+                                System.out.println(Integer.toBinaryString(currentChar[j-3]& 0xff));
+                            }
+                        }
+                        else lastByte = currentOutputBlock[i];
+                    }
+
+
+                    if(currentOutputBlock[1] == -13){
+                        System.out.println("dette er umulig");
+                    }
+
+
+                    //testing
                     utfil.write(currentOutputBlock);
                 }else {
                     uncompressedOut.append(currentSequence.toString());
