@@ -99,9 +99,7 @@ public class LZ {
         utfil.flush();
         utfil.close();
     }
-
-
-
+    
 
     private int handleUncompressedData(int byteIndex, byte[] bFilArr, StringBuffer sequences, int currentBlockLength, DataOutputStream utfil) throws IOException {
         int length = Math.abs(currentBlockLength);  //the length of the current block
@@ -109,10 +107,10 @@ public class LZ {
 
         for (int i = 0; i < length; i++) {
             byte currentByte = bFilArr[byteIndex++];
-            if(currentByte >= 0) {
+            if(currentByte >= 0) {  //if char is one byte
                 currentSequence.append((char)currentByte);
             }
-            else {
+            else {  //if char is more than one byte
                 byteIndex = handleSpecialChar(bFilArr,byteIndex, currentByte, currentSequence);
             }
         }
@@ -124,13 +122,10 @@ public class LZ {
     }
 
 
-
-
     private int handleCompressedData(int byteIndex, byte[] bFilArr, StringBuffer sequences, int currentBlockLength, DataOutputStream utfil) throws IOException {
         StringBuilder currentSequence = new StringBuilder();
-        byte[] tempShort = {bFilArr[byteIndex++],bFilArr[byteIndex++]};
-        short index = (short)(((tempShort[0] & 0xFF) << 8) | (tempShort[1] & 0xFF)); //What is the index of our compressed data in the sliding window
 
+        short index = (short)(((bFilArr[byteIndex++] & 0xFF) << 8) | (bFilArr[byteIndex++] & 0xFF)); //What is the index of our compressed data in the sliding window
 
         for (int i = index;(i <index + currentBlockLength); i++) {  //collect our sequence from the sliding window
             currentSequence.append(sequences.charAt(i));
@@ -159,8 +154,9 @@ public class LZ {
     private int handleSpecialChar(byte[] bFilArr,int byteIndex, byte currentByte, StringBuilder currentSequence) {
         byte[] currentChar;
         int charLength = 1;
-
         String binaryString = Integer.toBinaryString(currentByte & 0xff);
+        // How many ones at the start of the first byte
+        // (in UTF-8 this will be equal to the number of bytes in the character, if the character is longer than one byte)
         for (int i = 1; i < 4; i++) {
             if(binaryString.charAt(i) == 49) charLength++;
             else break;
@@ -169,7 +165,7 @@ public class LZ {
         int tempIndex = 1;
         currentChar = new byte[charLength];
         currentChar[0] = currentByte;
-        while(tempIndex < charLength){
+        while(tempIndex < charLength){  //read as many extra bytes as we need to complete the character
             currentChar[tempIndex++] = bFilArr[byteIndex++];
         }
         currentSequence.append(new String(currentChar));
