@@ -10,19 +10,6 @@ import java.util.Arrays;
 public class LZ {
 
     /**
-     * The entry point of application.
-     *
-     * @param args the input arguments
-     * @throws IOException the io exception
-     */
-    public static void main(String[] args) throws IOException {
-        LZ lz = new LZ();
-        lz.compressToFile("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fusk.txt");
-        lz.decompressFromFile("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fuskLZ.txt");
-    }
-
-
-    /**
      * Compress.
      * Helper method for compress. Handles the output path if only running LZ and not huffmann
      *
