@@ -43,7 +43,7 @@ public class LZ {
         }
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputPath.toString())));
 
-       
+
         utfil.write(compress(inputPath));
         utfil.flush();
         utfil.close();
@@ -195,7 +195,6 @@ public class LZ {
         ArrayList<Byte> compressedOutput = new ArrayList<>();
         StringBuilder currentSequence = new StringBuilder();
         StringBuilder currentUncompressedSequence = new StringBuilder();
-        byte[] currentOutputBlock = {};
 
         boolean lastUncompressed = true;
         int prevIndex = -1;
@@ -248,23 +247,19 @@ public class LZ {
                     String strCurrentCharLength = new String(currentChar);
                     int sequenceLength = currentSequence.length()-strCurrentCharLength.length();
 
-                    currentOutputBlock = new byte[3+charLength];
-                    currentOutputBlock[0] = (byte) (sequenceLength & 0xff); //her gjorde vi en forandring. currentSequence.length
-                    currentOutputBlock[1] = (byte) (prevIndex>>8);
-                    currentOutputBlock[2] = (byte) (prevIndex & 0b11111111);
+                    compressedOutput.add((byte) (sequenceLength & 0xff)); //her gjorde vi en forandring. currentSequence.length
+                    compressedOutput.add((byte) (prevIndex>>8));
+                    compressedOutput.add((byte) (prevIndex & 0b11111111));
                     if(charLength == 1){
-                        currentOutputBlock[3] = (byte) (currentChar[0] & 0xff);
+                        compressedOutput.add((byte) (currentChar[0] & 0xff));
                     }
 
                     else{
-                        for (int i = 3; i < currentOutputBlock.length; i++) {
-                            currentOutputBlock[i] = (byte) (currentChar[i-3] & 0xff);
+                        for (int i = 0; i < charLength; i++) {
+                            compressedOutput.add((byte) (currentChar[i] & 0xff));
                         }
                     }
 
-                    for (int i = 0; i < currentOutputBlock.length; i++) {
-                        compressedOutput.add(currentOutputBlock[i]);
-                    }
                 }else {
                     currentUncompressedSequence.append(currentSequence.toString());
                     lastUncompressed = true;
@@ -318,15 +313,10 @@ public class LZ {
 
     private void writeUncompressed(ArrayList<Byte> compressedOutput, StringBuilder uncompressedOut) throws IOException {
         int length = handleLength(uncompressedOut);
-        byte[] currentOutputBlock;
         byte[] currentSequenceBytes = uncompressedOut.toString().getBytes();
-        currentOutputBlock = new byte[currentSequenceBytes.length+1];
-        currentOutputBlock[0] = (byte) (-length & 0xff);
+        compressedOutput.add((byte) (-length & 0xff));
         for (int i = 0; i < currentSequenceBytes.length; i++) {
-            currentOutputBlock[i+1] = currentSequenceBytes[i];
-        }
-        for (int i = 0; i < currentOutputBlock.length; i++) {
-            compressedOutput.add(currentOutputBlock[i]);
+            compressedOutput.add(currentSequenceBytes[i]);
         }
     }
 
