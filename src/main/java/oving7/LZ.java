@@ -1,6 +1,8 @@
 package oving7;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Only works with UTF-8 encoded files!
@@ -15,7 +17,7 @@ public class LZ {
      */
     public static void main(String[] args) throws IOException {
         LZ lz = new LZ();
-        lz.compress("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fusk.txt");
+        lz.compressToFile("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fusk.txt");
         lz.decompressFromFile("C:\\Users\\robvo\\Desktop\\resources\\oving7\\fuskLZ.txt");
     }
 
@@ -27,7 +29,7 @@ public class LZ {
      * @param inputPath the input path
      * @throws IOException the io exception
      */
-    public void compress(String inputPath) throws IOException {
+    public void compressToFile(String inputPath) throws IOException {
         StringBuilder outputPath = new StringBuilder();
         if (inputPath.contains(".")) {
             String[] arr = inputPath.split("\\.");
@@ -39,7 +41,12 @@ public class LZ {
         }else {
             outputPath.append(inputPath).append("LZ");
         }
-        compress(inputPath, outputPath.toString());
+        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputPath.toString())));
+
+       
+        utfil.write(compress(inputPath));
+        utfil.flush();
+        utfil.close();
     }
 
     /**
@@ -99,7 +106,7 @@ public class LZ {
         utfil.flush();
         utfil.close();
     }
-    
+
 
     private int handleUncompressedData(int byteIndex, byte[] bFilArr, StringBuffer sequences, int currentBlockLength, DataOutputStream utfil) throws IOException {
         int length = Math.abs(currentBlockLength);  //the length of the current block
@@ -177,24 +184,23 @@ public class LZ {
      * Compress.
      *
      * @param filePath the file path
-     * @param outPath  the out path
      * @throws IOException the io exception
      */
-    public void compress(String filePath, String outPath) throws IOException {
-        StringBuffer sequences = new StringBuffer();
+    public byte[] compress(String filePath) throws IOException {
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)));
-        DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outPath)));
-        int prevIndex = -1;
-        int indexDos;
-        StringBuilder currentSequence = new StringBuilder();
-        byte[] currentOutputBlock = {};
-
         byte[] bFilArr = new byte[innfil.available()];
         innfil.readFully(bFilArr, 0, innfil.available());
-        int byteIndex = 0;
-        boolean lastUncompressed = true;
-        StringBuilder uncompressedOut = new StringBuilder();
 
+        StringBuffer sequences = new StringBuffer();
+        ArrayList<Byte> compressedOutput = new ArrayList<>();
+        StringBuilder currentSequence = new StringBuilder();
+        StringBuilder currentUncompressedSequence = new StringBuilder();
+        byte[] currentOutputBlock = {};
+
+        boolean lastUncompressed = true;
+        int prevIndex = -1;
+        int indexDos;
+        int byteIndex = 0;
 
         while (byteIndex < bFilArr.length){
 
@@ -226,14 +232,14 @@ public class LZ {
 
             indexDos = sequences.indexOf(currentSequence.toString());
 
-            if(indexDos < 0 || byteIndex == bFilArr.length || currentSequence.length() > 126 || uncompressedOut.length() > 126){
+            if(indexDos < 0 || byteIndex == bFilArr.length || currentSequence.length() > 126 || currentUncompressedSequence.length() > 126){
                 if (currentSequence.length() > 3) {
                     lastUncompressed = false;
                 }
                 sequences.append(currentSequence.toString());
-                if (!lastUncompressed || uncompressedOut.length() > 126) { //la til: || uncompressedOut.length() > 127
-                    writeUncompressed(utfil, uncompressedOut);
-                    uncompressedOut = new StringBuilder();
+                if (!lastUncompressed || currentUncompressedSequence.length() > 126) { //la til: || currentUncompressedSequence.length() > 127
+                    writeUncompressed(compressedOutput, currentUncompressedSequence);
+                    currentUncompressedSequence = new StringBuilder();
                 }
                 if(currentSequence.length() > 3){
 
@@ -256,9 +262,11 @@ public class LZ {
                         }
                     }
 
-                    utfil.write(currentOutputBlock);
+                    for (int i = 0; i < currentOutputBlock.length; i++) {
+                        compressedOutput.add(currentOutputBlock[i]);
+                    }
                 }else {
-                    uncompressedOut.append(currentSequence.toString());
+                    currentUncompressedSequence.append(currentSequence.toString());
                     lastUncompressed = true;
                 }
                 currentSequence = new StringBuilder();
@@ -267,14 +275,16 @@ public class LZ {
                 prevIndex = indexDos;
             }
         }
-        if (uncompressedOut.length()>0) {
-            writeUncompressed(utfil, uncompressedOut);
+        if (currentUncompressedSequence.length()>0) {
+            writeUncompressed(compressedOutput, currentUncompressedSequence);
         }
         innfil.close();
-        utfil.flush();
-        utfil.close();
+        byte[] compressedOutputArray = new byte[compressedOutput.size()];
+        for (int i = 0; i < compressedOutput.size(); i++) {
+            compressedOutputArray[i] = compressedOutput.get(i);
+        }
+        return compressedOutputArray;
     }
-
 
     //fin en bedre måte å gjøre dette på dersom mulig
     private int handleLength(StringBuilder currentSequence) {
@@ -306,7 +316,7 @@ public class LZ {
         return length;
     }
 
-    private void writeUncompressed(DataOutputStream utfil, StringBuilder uncompressedOut) throws IOException {
+    private void writeUncompressed(ArrayList<Byte> compressedOutput, StringBuilder uncompressedOut) throws IOException {
         int length = handleLength(uncompressedOut);
         byte[] currentOutputBlock;
         byte[] currentSequenceBytes = uncompressedOut.toString().getBytes();
@@ -315,7 +325,9 @@ public class LZ {
         for (int i = 0; i < currentSequenceBytes.length; i++) {
             currentOutputBlock[i+1] = currentSequenceBytes[i];
         }
-        utfil.write(currentOutputBlock);
+        for (int i = 0; i < currentOutputBlock.length; i++) {
+            compressedOutput.add(currentOutputBlock[i]);
+        }
     }
 
     private void trimList(StringBuffer sequences){
