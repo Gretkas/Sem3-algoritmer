@@ -4,18 +4,29 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
+/**
+ * The type Huffmann.
+ */
 public class Huffmann {
     private int[] frequencies;
     private byte[] byteArrayFile;
     private Node[] nodes;
     private Node rootNode;
 
+    /**
+     * Instantiates a new Huffmann.
+     */
     public Huffmann() {
         this.frequencies = new int[256];
     }
 
 
-
+    /**
+     * Decompress to file.
+     *
+     * @param inputPath the input path
+     * @throws IOException the io exception
+     */
     public void deCompressToFile(String inputPath) throws IOException {
         StringBuilder outputPath = new StringBuilder();
         if (inputPath.contains(".")) {
@@ -36,6 +47,12 @@ public class Huffmann {
     }
 
 
+    /**
+     * Decompress file as a byte array.
+     * @param inputPath the input path
+     * @return the decompressed byte array
+     * @throws IOException the io exception
+     */
     public byte[] deCompress(String inputPath) throws IOException {
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(inputPath)));
         generateFrequencyArray(innfil);
@@ -64,26 +81,25 @@ public class Huffmann {
     private void deCompressionHelper(ArrayList<Byte> deCompressedOutput) throws IOException {
         Node currentNode = rootNode;
         byte currentOutputChar;
-        int numChars = findNumChars()          ;   //change to long if compressing larger files than 2Gb //using this to prevent the last byte from writing extra chars.
-
-
+        int numChars = findNumChars();   //Using this to prevent the last byte from writing extra chars. Change to long if compressing larger files than 2Gb
 
         int index = 0;
         while (index < byteArrayFile.length){
             String binaryString = Integer.toBinaryString(byteArrayFile[index++] & 0xff);
-            int byteIndex = binaryString.length();
-            int leadingZeros = 8-binaryString.length();
+            int bitsLeft = binaryString.length();      //number of bits left to write from current byte
+            int leadingZerosLeft = 8-binaryString.length(); //number of leading-zeros left to write from current byte
 
-            while(numChars > 0 && (byteIndex > 0 || leadingZeros > 0)){
+            // While there are chars/bits left to write
+            while(numChars > 0 && (bitsLeft > 0 || leadingZerosLeft > 0)){
                 byte currentBit;
-                if(byteIndex > 0){
-                    currentBit = (byte) (binaryString.charAt((byteIndex--)-1)-48);
+                if(bitsLeft > 0){
+                    currentBit = (byte) (binaryString.charAt((bitsLeft--)-1)-48);
                 }else{
                     currentBit = 0;
-                    leadingZeros--;
+                    leadingZerosLeft--;
                 }
 
-
+                // Tree traversal
                 if(currentBit == 1) currentNode = currentNode.getNodeRight();
                 else currentNode = currentNode.getNodeLeft();
 
@@ -106,6 +122,12 @@ public class Huffmann {
     }
 
 
+    /**
+     * Compress from file.
+     *
+     * @param inputPath the input path
+     * @throws IOException the io exception
+     */
     public void compressFromFile(String inputPath) throws IOException {
         StringBuilder outputPath = new StringBuilder();
         if (inputPath.contains(".")) {
@@ -125,8 +147,15 @@ public class Huffmann {
        compress(byteArrayFile, outputPath.toString());
     }
 
-    public void compress(byte[] bAF, String outputPath) throws IOException {
-        byteArrayFile = bAF;
+    /**
+     * Compress.
+     *
+     * @param fileByteArray the byte-array we need to compress
+     * @param outputPath the output path
+     * @throws IOException the io exception
+     */
+    public void compress(byte[] fileByteArray, String outputPath) throws IOException {
+        byteArrayFile = fileByteArray;
 
         for (int i = 0; i < byteArrayFile.length; i++) {
             frequencies[byteArrayFile[i]+128]++;
@@ -138,15 +167,13 @@ public class Huffmann {
     private void compressionHelper(String outputPath) throws IOException {
         DataOutputStream utfil = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(outputPath)));
         utfil.write(frequenciesToByteArr());
-        int remainingInputBits = 0, remainingOutputBits = 0;
+        int remainingInputBits = 0, remainingOutputBits = 0;    //free-bits in current input and output byte
         byte currentInputByte, currentOutputByte = 0;
         int index = 0;
         long currentBitString = 0;
 
 
         while(index < byteArrayFile.length || (remainingOutputBits == 0 && index == byteArrayFile.length && remainingInputBits != 0)){
-
-
 
             if(remainingOutputBits == 0){
                 if(index != 0)utfil.writeByte(currentOutputByte);
@@ -233,9 +260,5 @@ public class Huffmann {
             updateBitstring(node.getNodeLeft(),bitString);
             updateBitstring(node.getNodeRight(),bitString);
         }
-    }
-
-    public int[] getFrequencies() {
-        return frequencies;
     }
 }

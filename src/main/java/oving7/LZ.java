@@ -169,7 +169,7 @@ public class LZ {
 
     /**
      * Compress.
-     *
+     * Sorry for ugly method
      * @param filePath the file path
      * @throws IOException the io exception
      */
@@ -177,90 +177,73 @@ public class LZ {
         DataInputStream innfil = new DataInputStream(new BufferedInputStream(new FileInputStream(filePath)));
         byte[] bFilArr = new byte[innfil.available()];
         innfil.readFully(bFilArr, 0, innfil.available());
+        innfil.close();
 
-        StringBuffer sequences = new StringBuffer();
-        ArrayList<Byte> compressedOutput = new ArrayList<>();
-        StringBuilder currentSequence = new StringBuilder();
-        StringBuilder currentUncompressedSequence = new StringBuilder();
+        StringBuffer sequences = new StringBuffer();                       //This is the sliding window
+        ArrayList<Byte> compressedOutput = new ArrayList<>();              //This is the complete output
+        StringBuilder currentSequence = new StringBuilder();               //The current sequence of characters that is being handled
+        StringBuilder currentUncompressedSequence = new StringBuilder();   //The current sequence of characters that where unable to be compressed
 
-        boolean lastUncompressed = true;
-        int prevIndex = -1;
-        int indexDos;
-        int byteIndex = 0;
+        int prevIndex = -1; //the index of the current match in the sliding window
+        int indexDos;       //a temporary index to check for matches
+        int byteIndex = 0;  //current position in file byte-array
 
-        while (byteIndex < bFilArr.length){
+        while (byteIndex < bFilArr.length){ //while not end of file
 
             byte currentByte = bFilArr[byteIndex++];
             byte[] currentChar ;
-            int charLength = 1;
+            int charLength = 1; //the length of the current char in number of bytes
 
 
-
-            if(currentByte >= 0){
+            if(currentByte >= 0){   //if the character is one byte
                 currentChar = new byte[1];
                 currentChar[0] = currentByte;
                 currentSequence.append((char)currentChar[0]);
-            }else {
-
+            }
+            else {  //if character is multiple bytes
                 String binaryString = Integer.toBinaryString(currentByte & 0xff);
-                for (int i = 1; i < 4; i++) {
+                for (int i = 1; i < 4; i++) {   //counts the number of bytes in the character
                     if(binaryString.charAt(i) == 49) charLength++;
                     else break;
                 }
                 int tempIndex = 1;
                 currentChar = new byte[charLength];
                 currentChar[0] = currentByte;
-                while(tempIndex < charLength){
-                    currentChar[tempIndex++] = (byte) (bFilArr[byteIndex++] & 0xff); //la til &0xff
+                while(tempIndex < charLength){  //read extra byte to complete the character
+                    currentChar[tempIndex++] = (byte) (bFilArr[byteIndex++] & 0xff);
                 }
                 currentSequence.append(new String(currentChar));
             }
 
-            indexDos = sequences.indexOf(currentSequence.toString());
+            indexDos = sequences.indexOf(currentSequence.toString());   //was a match found?
 
+            //no match was found, or end of file, or either sequence is longer than what can be expressed in one byte
             if(indexDos < 0 || byteIndex == bFilArr.length || currentSequence.length() > 126 || currentUncompressedSequence.length() > 126){
-                if (currentSequence.length() > 3) {
-                    lastUncompressed = false;
-                }
                 sequences.append(currentSequence.toString());
-                if (!lastUncompressed || currentUncompressedSequence.length() > 126) { //la til: || currentUncompressedSequence.length() > 127
+                int compressionLength = 6;  //The length a sequence must reach before it is worth compressing.
+                // This number was found by testing many numbers. For some reason larger numbers cause the program to crash. Sadly cant find out why due to time constraints.
+
+                // If a compressable sequence was found, that means that the uncompressed sequence must be printed to preserve the order of the file,
+                // or if the uncompressed sequence is longer than what can be expressed in one byte
+                if (currentSequence.length() > compressionLength || currentUncompressedSequence.length() > 126) {
                     writeUncompressed(compressedOutput, currentUncompressedSequence);
                     currentUncompressedSequence = new StringBuilder();
                 }
-                if(currentSequence.length() > 3){
 
+                //if a compressable sequence was found, write it
+                if(currentSequence.length() > compressionLength) writeCompressed(currentChar,currentSequence,prevIndex,compressedOutput);
+                //If current sequence is not worth compressing append it to the uncompressed sequence
+                else currentUncompressedSequence.append(currentSequence.toString());
 
-
-                    String strCurrentCharLength = new String(currentChar);
-                    int sequenceLength = currentSequence.length()-strCurrentCharLength.length();
-
-                    compressedOutput.add((byte) (sequenceLength & 0xff)); //her gjorde vi en forandring. currentSequence.length
-                    compressedOutput.add((byte) (prevIndex>>8));
-                    compressedOutput.add((byte) (prevIndex & 0b11111111));
-                    if(charLength == 1){
-                        compressedOutput.add((byte) (currentChar[0] & 0xff));
-                    }
-
-                    else{
-                        for (int i = 0; i < charLength; i++) {
-                            compressedOutput.add((byte) (currentChar[i] & 0xff));
-                        }
-                    }
-
-                }else {
-                    currentUncompressedSequence.append(currentSequence.toString());
-                    lastUncompressed = true;
-                }
                 currentSequence = new StringBuilder();
-                if(sequences.length() > 1<<15) trimList(sequences);
-            }else {
+                if(sequences.length() > 1<<15) trimList(sequences); //Moves the sliding window
+            }else { //A match was found, adjust indexes
                 prevIndex = indexDos;
             }
         }
-        if (currentUncompressedSequence.length()>0) {
+        if (currentUncompressedSequence.length()>0) {   //To prevent end of file errors
             writeUncompressed(compressedOutput, currentUncompressedSequence);
         }
-        innfil.close();
         byte[] compressedOutputArray = new byte[compressedOutput.size()];
         for (int i = 0; i < compressedOutput.size(); i++) {
             compressedOutputArray[i] = compressedOutput.get(i);
@@ -268,19 +251,41 @@ public class LZ {
         return compressedOutputArray;
     }
 
-    //fin en bedre måte å gjøre dette på dersom mulig
+    private void writeCompressed(byte[] currentChar, StringBuilder currentSequence, int prevIndex, ArrayList<Byte> compressedOutput) {
+        String strCurrentCharLength = new String(currentChar);
+        int sequenceLength = currentSequence.length()-strCurrentCharLength.length();
+
+        compressedOutput.add((byte) (sequenceLength & 0xff));   //Length of the compressed sequence
+        compressedOutput.add((byte) (prevIndex>>8));            //Match index expressed as two bytes
+        compressedOutput.add((byte) (prevIndex & 0xff));        //Match index expressed as two bytes
+        //Adds the last character
+        if(currentChar.length == 1){
+            compressedOutput.add((byte) (currentChar[0] & 0xff));
+        }
+        else{
+            for (int i = 0; i < currentChar.length; i++) {
+                compressedOutput.add((byte) (currentChar[i] & 0xff));
+            }
+        }
+    }
+
+    /**
+     * This whole method might be unnecessary, we created it to deal with 4-byte characters
+     * We kept it due to time constraints. Removing it would lead to a lot of remodeling
+     * Removing it would speed up the program, but shouldnt affect compression a lot
+     * @param currentSequence
+     * @return
+     */
     private int handleLength(StringBuilder currentSequence) {
         int length = currentSequence.length();
         int charLength = 1;
         String currentChar = "";
         byte[] bytes = currentSequence.toString().getBytes();
 
-
-
+        //checks the length of each character, and adjusts the sequence length accordingly
         for (int i = 0; i < bytes.length; i++) {
             currentChar = Integer.toBinaryString(bytes[i] & 0xff);
             if(currentChar.charAt(0) != '0' && currentChar.length() == 8){
-
 
                 for (int j = 1; j < 4; j++) {
                     if(currentChar.charAt(j) == 49)charLength++;
@@ -288,12 +293,10 @@ public class LZ {
                 }
                 if (charLength == 4){
                     length--;
-
                 }
                 i+=charLength-1;
                 charLength = 1;
             }
-
         }
         return length;
     }
