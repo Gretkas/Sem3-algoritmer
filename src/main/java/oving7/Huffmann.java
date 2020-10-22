@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 /**
- * The type Huffmann.
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
  */
 public class Huffmann {
     private int[] frequencies;
@@ -172,7 +175,7 @@ public class Huffmann {
         int index = 0;
         long currentBitString = 0;
 
-
+        //while there is more to write
         while(index < byteArrayFile.length || (remainingOutputBits == 0 && index == byteArrayFile.length && remainingInputBits != 0)){
 
             if(remainingOutputBits == 0){
@@ -187,25 +190,22 @@ public class Huffmann {
                 remainingInputBits = tempBitString.length();
             }
 
+            //We have free space in both bytes
             while(remainingInputBits > 0 && remainingOutputBits > 0){
+                currentOutputByte |= (currentBitString << (8-remainingOutputBits)); //Adds as many bits as possible without replacing the old ones
                 if(remainingInputBits >= remainingOutputBits){
-
-                    currentOutputByte |= ((currentBitString/* >> (remainingInputBits-remainingOutputBits)*/) << (8-remainingOutputBits)); // her er feilen?
                     remainingInputBits -= remainingOutputBits;
                     currentBitString >>= remainingOutputBits;
                     remainingOutputBits = 0;
                 }else{
-                    currentOutputByte |= (currentBitString << (8-remainingOutputBits));
                     remainingOutputBits -= remainingInputBits;
                     remainingInputBits = 0;
-
                 }
             }
         }
-        if(remainingOutputBits != 8) utfil.writeByte(currentOutputByte);
+        if(remainingOutputBits != 8) utfil.writeByte(currentOutputByte);    //Avoid EOF errors
         utfil.flush();
         utfil.close();
-
     }
 
     private byte[] frequenciesToByteArr() {
@@ -221,7 +221,6 @@ public class Huffmann {
     }
 
 
-
     private void generateTree(){
         PriorityQueue<Node> frequencyPQ = new PriorityQueue<>();
         nodes = new Node[256];
@@ -233,12 +232,12 @@ public class Huffmann {
         }
 
         while(frequencyPQ.size() > 1){
+            //Splice the two least frequent nodes, and adds the root of the resulting tree
             frequencyPQ.add(spliceNodes(frequencyPQ.poll(),frequencyPQ.poll()));
         }
 
         rootNode = frequencyPQ.poll();
     }
-
 
     private Node spliceNodes(Node n1, Node n2){
         int freq = n1.getFrequency() + n2.getFrequency();
@@ -246,7 +245,6 @@ public class Huffmann {
         updateBitstrings(splicedRoot);
         return splicedRoot;
     }
-
 
     private void updateBitstrings(Node node){
         updateBitstring(node.getNodeLeft(),"0");

@@ -1,5 +1,11 @@
 package oving7;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class Node implements Comparable<Node> {
     private int frequency, asciiValue;
     private String bitString;
@@ -35,9 +41,6 @@ public class Node implements Comparable<Node> {
     public int compareTo(Node o) {
         return this.frequency - o.getFrequency();
     }
-
-
-
 
 
     public int getFrequency() {

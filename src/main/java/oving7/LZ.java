@@ -6,6 +6,10 @@ import java.util.Arrays;
 
 /**
  * Only works with UTF-8 encoded files!
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
  */
 public class LZ {
 
