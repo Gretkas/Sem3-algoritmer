@@ -11,16 +11,11 @@ public class Graph {
     public LinkedList<Node> findDistance(int startIndex, int goalIndex){
         LinkedList<Node> result = new LinkedList<>();
 
+        //for loop to trace back to the starting node
         for (Node n = dijkstraDistance(startIndex,goalIndex);n!=null;n=n.getPreviousNode()){
             result.addFirst(n);
         }
         return result;
-    }
-
-    public Node[] findRecharge(int startIndex, int stationType){
-        Node[] result = new Node[10];
-        return null;
-
     }
 
 
@@ -30,7 +25,11 @@ public class Graph {
         this.priorityQueue = new HeapPQ(numberNode);
 
         for (int i = 0; i < numberNode; i++) {
-            priorityQueue.add(new Node(i),i);
+            st = new StringTokenizer(br.readLine());
+            Node n = new Node(Integer.parseInt(st.nextToken()));
+            n.setLatitude(Double.parseDouble(st.nextToken()));
+            n.setLongitude(Double.parseDouble(st.nextToken()));
+            priorityQueue.add(n,i);
         }
     }
 
@@ -50,16 +49,21 @@ public class Graph {
         }
     }
 
-    public void readNodeCodes(BufferedReader br) throws IOException {
+    public int readNodeCodes(BufferedReader br, String locationName) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
         int numbPoints = Integer.parseInt(st.nextToken());
+        int locationNode = -1;
 
         for (int i = 0; i < numbPoints; i++) {
             st = new StringTokenizer(br.readLine());
             int nodeNumb = Integer.parseInt(st.nextToken());
             int code = Integer.parseInt(st.nextToken());
             priorityQueue.get(nodeNumb).setCode(code);
+            if(st.nextToken().equals("\""+locationName+"\"")){
+                locationNode = nodeNumb;
+            }
         }
+        return locationNode;
     }
 
     public int[] findStartGoalNodes(String start, String slutt, BufferedReader br) throws  IOException{
@@ -97,7 +101,7 @@ public class Graph {
     }
 
 
-    public Node dijkstraDistance(int startIndex,int goalIndex){
+    private Node dijkstraDistance(int startIndex,int goalIndex){
         priorityQueue.startPriorityQueue(startIndex);
         for (int i = (numberNode-1); i > 0; i--) {
             Node node = priorityQueue.pop(i);
@@ -109,15 +113,23 @@ public class Graph {
         return null;
     }
 
-    public void dijkstraGas(int index){     //her starter vi!!
-        priorityQueue.startPriorityQueue(index);
+    public Node[] dijkstraGas(int startIndex,int typeOfRecharge){     //her starter vi!!
+        Node[] result = new Node[10];
+        int numbersFound = 0;
+        priorityQueue.startPriorityQueue(startIndex);
         for (int i = (numberNode-1); i > 0; i--) {
             Node node = priorityQueue.pop(i);
+            if (node.getCode() == typeOfRecharge || node.getCode() == 6){
+                result[numbersFound] = node;
+                numbersFound++;
+                if(numbersFound > 9) return result;
+            }
             for (Edge e = node.getEdge(); e!=null; e = e.getNextEdge()){
                 adjustDistance(node,e);
             }
 
         }
+        return (result[0]==null?null:result);
     }
 
 }
