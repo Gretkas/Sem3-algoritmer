@@ -77,12 +77,10 @@ public class RoutePainter implements Painter<JXMapViewer>
             // convert geo-coordinate to world bitmap pixel
             Point2D pt = map.getTileFactory().geoToPixel(gp, map.getZoom());
 
-            if (first)
-            {
+            if (first){
                 first = false;
             }
-            else
-            {
+            else{
                 g.drawLine(lastX, lastY, (int) pt.getX(), (int) pt.getY());
             }
 

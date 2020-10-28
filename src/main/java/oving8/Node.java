@@ -1,28 +1,30 @@
 package oving8;
 
 public class Node {
+    private final int nodeNumber;
+    protected static final int infinity = 2147483647>>1;
+    private final double latitude;
+    private final double longitude;
+
+    private Node previousNode;
     private Edge edge;
-    private int nodeNumber;
     private int currentIndex;
     private int dist;
     private boolean isFinished;
-    private Node previousNode;
-    private static final int infinity = 2147483647>>1;
     private int code;
-    private double latitude;
-    private double longitude;
 
-
-
-
-
-
-    public Node(int nodeNumber){
+    public Node(int nodeNumber,double latitude,double longitude){
         this.edge = null;
         this.nodeNumber = nodeNumber;
         this.currentIndex = nodeNumber;
+        this.latitude = latitude;
+        this.longitude = longitude;
         this.dist = infinity;
+
     }
+
+
+
 
     public Node getPreviousNode() {
         return previousNode;
@@ -36,37 +38,18 @@ public class Node {
     public void setDist(int dist) {
         this.dist = dist;
     }
-    public void  setDistInf(){
-        this.dist = infinity;
-    }
-    public static int getInfinity() {
-        return infinity;
-    }
-
     public int getCode() {
         return code;
     }
-
     public void setCode(int code) {
         this.code = code;
     }
-
     public double getLatitude() {
         return latitude;
     }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return longitude;
     }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
     public boolean isFinished() {
         return isFinished;
     }
@@ -87,8 +70,5 @@ public class Node {
     }
     public int getNodeNumber() {
         return nodeNumber;
-    }
-    public void setNodeNumber(int nodeNumber) {
-        this.nodeNumber = nodeNumber;
     }
 }

@@ -18,7 +18,6 @@ public class Graph {
         return result;
     }
 
-
     public void readNodeFile(BufferedReader br) throws IOException {
         StringTokenizer st = new StringTokenizer(br.readLine());
         this.numberNode = Integer.parseInt(st.nextToken());
@@ -26,9 +25,10 @@ public class Graph {
 
         for (int i = 0; i < numberNode; i++) {
             st = new StringTokenizer(br.readLine());
-            Node n = new Node(Integer.parseInt(st.nextToken()));
-            n.setLatitude(Double.parseDouble(st.nextToken()));
-            n.setLongitude(Double.parseDouble(st.nextToken()));
+            int nNumber = Integer.parseInt(st.nextToken());
+            double lat = Double.parseDouble(st.nextToken());
+            double lon = Double.parseDouble(st.nextToken());
+            Node n = new Node(nNumber,lat,lon);
             priorityQueue.add(n,i);
         }
     }
@@ -88,9 +88,6 @@ public class Graph {
 
 
 
-
-
-
     private void adjustDistance(Node node, Edge edge){
         int newDist = (node.getDist() + edge.getWeight());
         if(newDist < edge.getNodeTo().getDist()){
@@ -132,4 +129,15 @@ public class Graph {
         return (result[0]==null?null:result);
     }
 
+    private Node aStar(int startIndex,int goalIndex){
+        priorityQueue.startPriorityQueue(startIndex);
+        for (int i = (numberNode-1); i > 0; i--) {
+            Node node = priorityQueue.pop(i);
+            if(node.getNodeNumber() == goalIndex) return node;
+            for (Edge e = node.getEdge(); e!=null; e = e.getNextEdge()){
+                adjustDistance(node,e);
+            }
+        }
+        return null;
+    }
 }
