@@ -7,10 +7,12 @@ public class NodeAStar extends Node{
 
     private NodeAStar previousNode;
     private int heuristicDist;
+    private int startDist;
 
     public NodeAStar(int nodeNumber,double latitude,double longitude){
         super(nodeNumber,latitude,longitude);
         this.heuristicDist = infinity;
+        this.startDist = infinity;
         this.latitudeRad = latitude*Math.PI/180;
         this.longitudeRad = longitude*Math.PI/180;
         this.latitudeCos = Math.cos(latitudeRad);
@@ -33,5 +35,11 @@ public class NodeAStar extends Node{
     }
     public int getHeuristicDist() {
         return heuristicDist;
+    }
+    public int getStartDist() {
+        return startDist;
+    }
+    public void setStartDist(int startDist) {
+        this.startDist = startDist;
     }
 }

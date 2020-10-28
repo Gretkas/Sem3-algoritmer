@@ -25,8 +25,12 @@ public class HeapPQ {
      * sets start node of the priorityqueue to the index zero*/
     public void startPriorityQueue(int startIndex){
         priorityQueue[startIndex].setDist(0);
+        if(priorityQueue[startIndex] instanceof NodeAStar){
+            ((NodeAStar) priorityQueue[startIndex]).setStartDist(0);
+        }
         swapPQ(0,startIndex);
     }
+
 
 
     private void bubbleDown(int index){
@@ -53,6 +57,21 @@ public class HeapPQ {
         if(priorityQueue[index].getDist() < priorityQueue[parentIndex].getDist()){
             swapPQ(index,parentIndex);
             bubbleUp(parentIndex);
+        }
+    }
+
+    public void bubbleUpAStar(int index){
+        int parentIndex = (index-1)>>1;
+        if(parentIndex<0) return;
+
+        if(priorityQueue[index].getDist() < priorityQueue[parentIndex].getDist()){
+            swapPQ(index,parentIndex);
+            bubbleUpAStar(parentIndex);
+        }else if(priorityQueue[index].getDist() == priorityQueue[parentIndex].getDist()){
+            if(((NodeAStar)priorityQueue[index]).getHeuristicDist() < ((NodeAStar)priorityQueue[parentIndex]).getHeuristicDist()){
+                swapPQ(index,parentIndex);
+                bubbleUpAStar(parentIndex);
+            }
         }
     }
 

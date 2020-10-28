@@ -12,7 +12,7 @@ public class KlientOV8 {
         String graphStrNodes = basePath + "noderIslam.txt";
         String graphStrEdge = basePath + "kanterIslam.txt";
         String graphStrInterest = basePath + "interessepktIslam.txt";
-/*        String graphStrNodes = basePath + "noderNorden.txt";
+/*      String graphStrNodes = basePath + "noderNorden.txt";
         String graphStrEdge = basePath + "kanterNorden.txt";
         String graphStrInterest = basePath + "interessepktNorden.txt";*/
         BufferedReader br1 = new BufferedReader(new FileReader(new File(graphStrNodes)));
@@ -20,8 +20,21 @@ public class KlientOV8 {
         BufferedReader br3 = new BufferedReader(new FileReader(new File(graphStrInterest)));
 
 
-        graph.readNodeFile(br1);
-        graph.readEdgeFile(br2);
+      /*  graph.readNodeFile(br1);
+        graph.readEdgeFile(br2);*/
+
+        GraphAStar gas = new GraphAStar();
+        gas.readNodeFile(br1);
+        gas.readEdgeFile(br2);
+        int startIndex = gas.findStartGoalNodes("Þórshöfn","Kirkjubæjarklaustur",br3);
+        LinkedList<NodeAStar> shortestPathGas = gas.findDistance(startIndex);//Her er feilen!!!!
+        System.out.println(shortestPathGas.size());
+        System.out.println(shortestPathGas.removeFirst().getNodeNumber());
+        //Map.generateMapGAS(shortestPathGas);
+
+        
+
+
 
         /*int[] startGoalNodeNumbers = graph.findStartGoalNodes("Trondheim","Alta",br3);
         LinkedList<Node> shortestPath = graph.findDistance(startGoalNodeNumbers[0],startGoalNodeNumbers[1]);

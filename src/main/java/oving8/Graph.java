@@ -128,16 +128,4 @@ public class Graph {
         }
         return (result[0]==null?null:result);
     }
-
-    private Node aStar(int startIndex,int goalIndex){
-        priorityQueue.startPriorityQueue(startIndex);
-        for (int i = (numberNode-1); i > 0; i--) {
-            Node node = priorityQueue.pop(i);
-            if(node.getNodeNumber() == goalIndex) return node;
-            for (Edge e = node.getEdge(); e!=null; e = e.getNextEdge()){
-                adjustDistance(node,e);
-            }
-        }
-        return null;
-    }
 }

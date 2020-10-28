@@ -82,4 +82,13 @@ public class Map {
             }
             generateMap(nodes,true);
         }
+
+        public static void generateMapGAS(LinkedList<NodeAStar> nodeList){
+            Node[] nodes = new Node[nodeList.size()];
+            for (int i = 0; i < nodes.length; i++) {
+                NodeAStar n = nodeList.removeFirst();
+                nodes[i] = new Node(n.getNodeNumber(),n.getLatitude(),n.getLongitude());
+            }
+            generateMap(nodes,true);
+        }
 }
