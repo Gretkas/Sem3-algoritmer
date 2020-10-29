@@ -14,6 +14,7 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.painter.Painter;
 
 /**
+ * Fant på nettet
  * Paints a route
  * @author Martin Steiger
  */

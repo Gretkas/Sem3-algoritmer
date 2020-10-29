@@ -14,8 +14,9 @@ import org.jxmapviewer.viewer.GeoPosition;
 import org.jxmapviewer.viewer.TileFactoryInfo;
 import org.jxmapviewer.viewer.Waypoint;
 import org.jxmapviewer.viewer.WaypointPainter;
-
-
+/**
+ * Fant på nettet, men redigert av oss for å passe oppgaven noe bedre
+ */
 public class Map {
 
         public static void generateMap(Node[] nodes,boolean drawRoute){

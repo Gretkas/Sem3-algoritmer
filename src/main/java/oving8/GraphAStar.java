@@ -5,6 +5,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class GraphAStar{
     private HeapPQ priorityQueue;
     private int numberNode, numberEdge;

@@ -1,5 +1,11 @@
 package oving8;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class Node {
     private final int nodeNumber;
     protected static final int infinity = 2147483647>>1;

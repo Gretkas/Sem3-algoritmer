@@ -1,5 +1,11 @@
 package oving8;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class NodeAStar extends Node{
     private final double latitudeRad;
     private final double latitudeCos;

@@ -9,14 +9,17 @@ import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.jar.JarOutputStream;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class KlientOV8 {
     public static void main(String[] args) throws IOException {
         Graph graph = new Graph();
         GraphAStar gas = new GraphAStar();
         String basePath = "C:\\Users\\Robin Vold\\OneDrive\\Skole\\NTNU\\Algoritmer og datastrukturer\\resources\\oving8\\";
-/*      String graphStrNodes = basePath + "noderIslam.txt";
-        String graphStrEdge = basePath + "kanterIslam.txt";
-        String graphStrInterest = basePath + "interessepktIslam.txt";*/
         String graphStrNodes = basePath + "noderNorden.txt";
         String graphStrEdge = basePath + "kanterNorden.txt";
         String graphStrInterest = basePath + "interessepktNorden.txt";
@@ -77,8 +80,6 @@ public class KlientOV8 {
         seconds %= 60;
         System.out.println("Travel time: hours: "+hours+", minutes: "+minutes+", seconds: "+seconds);
     }
-
-
 
 
 }

@@ -3,6 +3,12 @@ package oving8;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * @author Sergio Martinez
+ * @author Robin C. Vold
+ * @author Sigmund Ole Granaas
+ * @author Ilona Podliashanyk
+ */
 public class HeapPQ {
     private Node[] priorityQueue;
 
