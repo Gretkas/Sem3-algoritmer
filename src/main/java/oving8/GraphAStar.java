@@ -41,6 +41,7 @@ public class GraphAStar{
         this.numberEdge = Integer.parseInt(st.nextToken());
 
         for (int i = 0; i < numberEdge; i++) {
+
             st = new StringTokenizer(br.readLine());
             int fra = Integer.parseInt(st.nextToken());
             int til = Integer.parseInt(st.nextToken());
@@ -49,6 +50,7 @@ public class GraphAStar{
             Edge e = new Edge(priorityQueue.get(til), priorityQueue.get(fra).getEdge(),weight);
             priorityQueue.get(fra).setEdge(e);
         }
+        System.out.println("Slutt readEdgeFile");
     }
 
     public int findStartGoalNodes(String start, String slutt, BufferedReader br) throws  IOException{
@@ -68,13 +70,16 @@ public class GraphAStar{
                 this.goalNode = (NodeAStar) priorityQueue.get(nodeNumb);
             }
         }
+        System.out.println("Slutt findStartGoalNodes");
         return startIndex;
     }
 
     private void adjustDistance(NodeAStar node, Edge edge){
         int newStartDist = (node.getStartDist() + edge.getWeight());
         NodeAStar nas = (NodeAStar) edge.getNodeTo();
-        if(nas.getHeuristicDist() != NodeAStar.infinity) nas.calculateHeuristic(goalNode);
+        if(nas.getHeuristicDist() == NodeAStar.infinity){
+            nas.calculateHeuristic(goalNode);
+        }
 
         if(newStartDist < nas.getStartDist()){
             nas.setStartDist(newStartDist);
