@@ -7,6 +7,7 @@ import java.util.*;
 public class Graph {
     private HeapPQ priorityQueue;
     private int numberNode, numberEdge;
+    private int numberNodesChecked = 0;
 
     public LinkedList<Node> findDistance(int startIndex, int goalIndex){
         LinkedList<Node> result = new LinkedList<>();
@@ -59,7 +60,11 @@ public class Graph {
             int nodeNumb = Integer.parseInt(st.nextToken());
             int code = Integer.parseInt(st.nextToken());
             priorityQueue.get(nodeNumb).setCode(code);
-            if(st.nextToken().equals("\""+locationName+"\"")){
+            String name = st.nextToken();
+            while(st.hasMoreTokens()){
+                name += " " + st.nextToken();
+            }
+            if(name.equals("\""+locationName+"\"")){
                 locationNode = nodeNumb;
             }
         }
@@ -76,6 +81,9 @@ public class Graph {
             int nodeNumb = Integer.parseInt(st.nextToken());
             st.nextToken();
             String name = st.nextToken();
+            while(st.hasMoreTokens()){
+                name += " " + st.nextToken();
+            }
             if(name.equals("\""+start+"\"")){
                 nodeNumbers[0] = nodeNumb;
             }
@@ -102,6 +110,7 @@ public class Graph {
         priorityQueue.startPriorityQueue(startIndex);
         for (int i = (numberNode-1); i > 0; i--) {
             Node node = priorityQueue.pop(i);
+            numberNodesChecked++;
             if(node.getNodeNumber() == goalIndex) return node;
             for (Edge e = node.getEdge(); e!=null; e = e.getNextEdge()){
                 adjustDistance(node,e);
@@ -127,5 +136,9 @@ public class Graph {
 
         }
         return (result[0]==null?null:result);
+    }
+
+    public int getNumberNodesChecked() {
+        return numberNodesChecked;
     }
 }

@@ -9,6 +9,7 @@ public class GraphAStar{
     private HeapPQ priorityQueue;
     private int numberNode, numberEdge;
     private NodeAStar goalNode;
+    private int numberNodesChecked = 0;
 
     public LinkedList<NodeAStar> findDistance(int startIndex){
         LinkedList<NodeAStar> result = new LinkedList<>();
@@ -50,7 +51,6 @@ public class GraphAStar{
             Edge e = new Edge(priorityQueue.get(til), priorityQueue.get(fra).getEdge(),weight);
             priorityQueue.get(fra).setEdge(e);
         }
-        System.out.println("Slutt readEdgeFile");
     }
 
     public int findStartGoalNodes(String start, String slutt, BufferedReader br) throws  IOException{
@@ -63,6 +63,9 @@ public class GraphAStar{
             int nodeNumb = Integer.parseInt(st.nextToken());
             st.nextToken();
             String name = st.nextToken();
+            while(st.hasMoreTokens()){
+                name += " " + st.nextToken();
+            }
             if(name.equals("\""+start+"\"")){
                 startIndex = nodeNumb;
             }
@@ -70,7 +73,6 @@ public class GraphAStar{
                 this.goalNode = (NodeAStar) priorityQueue.get(nodeNumb);
             }
         }
-        System.out.println("Slutt findStartGoalNodes");
         return startIndex;
     }
 
@@ -96,11 +98,16 @@ public class GraphAStar{
         priorityQueue.startPriorityQueue(startIndex);
         for (int i = (numberNode-1); i > 0; i--) {
             NodeAStar node = (NodeAStar) priorityQueue.pop(i);
+            numberNodesChecked++;
             if(node.getNodeNumber() == goalNode.getNodeNumber()) return node;
             for (Edge e = node.getEdge(); e!=null; e = e.getNextEdge()){
                 adjustDistance(node,e);
             }
         }
         return null;
+    }
+
+    public int getNumberNodesChecked() {
+        return numberNodesChecked;
     }
 }
